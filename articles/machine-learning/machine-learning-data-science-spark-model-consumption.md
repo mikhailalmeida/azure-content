@@ -3,8 +3,8 @@
 	description="How to score learning models that have been stored in Azure Blob Storage (WASB)."
 	services="machine-learning"
 	documentationCenter=""
-	authors="bradsev,deguhath,gokuma"
-	manager="paulettm"
+	authors="bradsev"
+	manager="jhubbard"
 	editor="cgronlun" />
 
 <tags
@@ -13,8 +13,8 @@
 	ms.tgt_pltfrm="na"
 	ms.devlang="na"
 	ms.topic="article"
-	ms.date="04/26/2016"
-	ms.author="deguhath;bradsev" />
+	ms.date="10/07/2016"
+	ms.author="deguhath;bradsev;gokuma" />
 
 # Score Spark-built machine learning models 
 
@@ -25,28 +25,32 @@ This topic describes how to load machine learning (ML) models that have been bui
 
 ## Prerequisites
 
-1. You need an Azure account and an HDInsight Spark cluster, version Spark 1.5.2 (HDI 3.3), to begin this walkthrough. See the [Overview of Data Science using Spark on Azure HDInsight](machine-learning-data-science-spark-overview.md) for these requirements, for a description of the NYC 2013 Taxi data used here, and for instructions on how execute code from a Jupyter notebook on the Spark cluster. The **machine-learning-data-science-spark-model-consumption.ipynb** notebook that contains the code samples in this topic are available in [Github](https://github.com/Azure/Azure-MachineLearning-DataScience/tree/master/Misc/Spark/Python).
+1. You need an Azure account and an HDInsight Spark You need an HDInsight 3.4 Spark 1.6 cluster to complete this walkthrough. See the [Overview of Data Science using Spark on Azure HDInsight](machine-learning-data-science-spark-overview.md) for instructions on how to satisfy these requirements. That topic also contains a description of the NYC 2013 Taxi data used here and instructions on how to execute code from a Jupyter notebook on the Spark cluster. The **pySpark-machine-learning-data-science-spark-model-consumption.ipynb** notebook that contains the code samples in this topic is available in [Github](https://github.com/Azure/Azure-MachineLearning-DataScience/tree/master/Misc/Spark/pySpark).
 
-2. You must also create the machine learning models to be scored here by working through the [Data exploration and modeling with Spark](machine-learning-data-science-spark-data-exploration-modeling.md) topic.
+2. You must also create the machine learning models to be scored here by working through the [Data exploration and modeling with Spark](machine-learning-data-science-spark-data-exploration-modeling.md) topic.   
 
 
 [AZURE.INCLUDE [delete-cluster-warning](../../includes/hdinsight-delete-cluster-warning.md)]
  
 
-## Setup Spark and directory paths to stored data and models 
+## Setup: storage locations, libraries, and the preset Spark context
 
-Spark is able to read and write to a Azure Storage Blob (WASB). So any of your existing data stored there can be processed using Spark and the results stored again in WASB.
+Spark is able to read and write to an Azure Storage Blob (WASB). So any of your existing data stored there can be processed using Spark and the results stored again in WASB.
 
-To save models or files in WASB, the path needs to be specified properly. The default container attached to the Spark cluster can be referenced using a path beginning with: *"wasb//"*. The following code sample specifies the location of the data to be read and the path for the model storage directory to which the model output will be saved. 
+To save models or files in WASB, the path needs to be specified properly. The default container attached to the Spark cluster can be referenced using a path beginning with: *"wasb//"*. The following code sample specifies the location of the data to be read and the path for the model storage directory to which the model output is saved. 
 
 
 ### Set directory paths for storage locations in WASB
 
-Models are saved in: "wasb:///user/remoteuser/NYCTaxi/Models". If this path is not set properly, models will not be loaded for scoring.
+Models are saved in: "wasb:///user/remoteuser/NYCTaxi/Models". If this path is not set properly, models are not loaded for scoring.
 
-The scored results have been saved in: "wasb:///user/remoteuser/NYCTaxi/ScoredResults". If the path to folder is incorrect, results will not be saved in that folder.
+The scored results have been saved in: "wasb:///user/remoteuser/NYCTaxi/ScoredResults". If the path to folder is incorrect, results are not saved in that folder.   
 
->AZURE.NOTE: The file path locations can be copied and pasted into the placeholders in this code from the output of the last cell of the **machine-learning-data-science-spark-data-exploration-modeling.ipynb** notebook.
+
+>[AZURE.NOTE] The file path locations can be copied and pasted into the placeholders in this code from the output of the last cell of the **machine-learning-data-science-spark-data-exploration-modeling.ipynb** notebook.   
+
+
+Here is the code to set directory paths: 
 
 	# LOCATION OF DATA TO BE SCORED (TEST DATA)
 	taxi_test_file_loc = "wasb://mllibwalkthroughs@cdspsparksamples.blob.core.windows.net/Data/NYCTaxi/JoinedTaxiTripFare.Point1Pct.Test.tsv";
@@ -73,10 +77,10 @@ The scored results have been saved in: "wasb:///user/remoteuser/NYCTaxi/ScoredRe
 
 **OUTPUT:**
 
-datetime.datetime(2016, 4, 19, 17, 21, 28, 379845)
+datetime.datetime(2016, 4, 25, 23, 56, 19, 229403)
 
 
-### Import libraries needed and set Spark context 
+### Import libraries
 
 Set spark context and import necessary libraries with the following code
 
@@ -85,6 +89,8 @@ Set spark context and import necessary libraries with the following code
 	from pyspark import SparkConf
 	from pyspark import SparkContext
 	from pyspark.sql import SQLContext
+	import matplotlib
+	import matplotlib.pyplot as plt
 	from pyspark.sql import Row
 	from pyspark.sql.functions import UserDefinedFunction
 	from pyspark.sql.types import *
@@ -92,24 +98,30 @@ Set spark context and import necessary libraries with the following code
 	from numpy import array
 	import numpy as np
 	import datetime
-	
-	# SET SPARK CONTEXT
-	sc = SparkContext(conf=SparkConf().setMaster('yarn-client'))
-	sqlContext = SQLContext(sc)
-	atexit.register(lambda: sc.stop())
-	
-	sc.defaultParallelism
 
-**OUTPUT:**
 
-4
+### Preset Spark context and PySpark magics
+
+The PySpark kernels that are provided with Jupyter notebooks have a preset context. So you do not need to set the Spark or Hive contexts explicitly before you start working with the application you are developing. These are available for you by default. These contexts are:
+
+- sc - for Spark 
+- sqlContext - for Hive
+
+The PySpark kernel provides some predefined “magics”, which are special commands that you can call with %%. There are two such commands that are used in these code samples.
+
+- **%%local** Specified that the code in subsequent lines is executed locally. Code must be valid Python code.
+- **%%sql -o <variable name>** 
+- Executes a Hive query against the sqlContext. If the -o parameter is passed, the result of the query is persisted in the %%local Python context as a Pandas dataframe.
+ 
+
+For more information on the kernels for Jupyter notebooks and the predefined "magics" that they provide, see [Kernels available for Jupyter notebooks with HDInsight Spark Linux clusters on HDInsight](../hdinsight/hdinsight-apache-spark-jupyter-notebook-kernels.md).
 
 
 ## Ingest data and create a cleaned data frame
 
 This section contains the code for a series of tasks required to ingest the data to be scored. Read in a joined 0.1% sample of the taxi trip and fare file (stored as a .tsv file), format the data, and then creates a clean data frame.
 
-The taxi trip and fare files were joined based on the procedure provided in the: [The Cortana Analytics Process in action: using HDInsight Hadoop clusters](machine-learning-data-science-process-hive-walkthrough.md) topic.
+The taxi trip and fare files were joined based on the procedure provided in the: [The Team Data Science Process in action: using HDInsight Hadoop clusters](machine-learning-data-science-process-hive-walkthrough.md) topic.
 
 	# INGEST DATA AND CREATE A CLEANED DATA FRAME
 
@@ -171,7 +183,7 @@ The taxi trip and fare files were joined based on the procedure provided in the:
 
 **OUTPUT:**
 
-Time taken to execute above cell: 15.36 seconds
+Time taken to execute above cell: 46.37 seconds
 
 
 ## Prepare data for scoring in Spark 
@@ -184,7 +196,7 @@ This section shows how to index categorical data using a `StringIndexer` and enc
 
 The [StringIndexer](http://spark.apache.org/docs/latest/ml-features.html#stringindexer) encodes a string column of labels to a column of label indices. The indices are ordered by label frequencies. 
 
-The [OneHotEncoder](http://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html#sklearn.preprocessing.OneHotEncoder) maps a column of label indices to a column of binary vectors, with at most a single one-value. This encoding allows algorithms which expect continuous valued features, such as logistic regression, to be applied to categorical features.
+The [OneHotEncoder](http://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.OneHotEncoder.html#sklearn.preprocessing.OneHotEncoder) maps a column of label indices to a column of binary vectors, with at most a single one-value. This encoding allows algorithms that expect continuous valued features, such as logistic regression, to be applied to categorical features.
 	
 	#INDEX AND ONE-HOT ENCODE CATEGORICAL FEATURES
 
@@ -192,7 +204,7 @@ The [OneHotEncoder](http://scikit-learn.org/stable/modules/generated/sklearn.pre
 	timestart = datetime.datetime.now()
 	
 	# LOAD PYSPARK LIBRARIES
-	from pyspark.ml.feature import OneHotEncoder, StringIndexer, VectorAssembler, OneHotEncoder, VectorIndexer
+	from pyspark.ml.feature import OneHotEncoder, StringIndexer, VectorAssembler, VectorIndexer
 	
 	# CREATE FOUR BUCKETS FOR TRAFFIC TIMES
 	sqlStatement = """
@@ -246,7 +258,7 @@ The [OneHotEncoder](http://scikit-learn.org/stable/modules/generated/sklearn.pre
 
 **OUTPUT:**
 
-Time taken to execute above cell: 4.88 seconds
+Time taken to execute above cell: 5.37 seconds
 
 
 ### Create RDD objects with feature arrays for input into models
@@ -323,12 +335,12 @@ It also contains code that shows how to scale data with the `StandardScalar` pro
 
 **OUTPUT:**
 
-Time taken to execute above cell: 9.94 seconds
+Time taken to execute above cell: 11.72 seconds
 
 
 ## Score with the Logistic Regression Model and save output to blob
 
-The code in this section shows how to load a Logistic Regression Model  saved in Azure blob storage and use it to predict whether or not a tip is paid on a taxi trip, score it with standard classification metrics, and then save and plot the results to blob storage. The scored results are stored in RDD objects. 
+The code in this section shows how to load a Logistic Regression Model that has been saved in Azure blob storage and use it to predict whether or not a tip is paid on a taxi trip, score it with standard classification metrics, and then save and plot the results to blob storage. The scored results are stored in RDD objects. 
 
 
 	# SCORE AND EVALUATE LOGISTIC REGRESSION MODEL
@@ -357,12 +369,12 @@ The code in this section shows how to load a Logistic Regression Model  saved in
 
 **OUTPUT:**
 
-Time taken to execute above cell: 32.46 seconds
+Time taken to execute above cell: 19.22 seconds
 
 
 ## Score a Linear Regression Model
 
-We used [LinearRegressionWithSGD](https://spark.apache.org/docs/latest/api/python/pyspark.mllib.html#pyspark.mllib.regression.LinearRegressionWithSGD) to train a linear regression model using Stochastic Gradient Descent (SGD) for optimization to predict the amount of tips paid. 
+We used [LinearRegressionWithSGD](https://spark.apache.org/docs/latest/api/python/pyspark.mllib.html#pyspark.mllib.regression.LinearRegressionWithSGD) to train a linear regression model using Stochastic Gradient Descent (SGD) for optimization to predict the amount of tip paid. 
 
 The code in this section shows how to load a Linear Regression Model from Azure blob storage, score using scaled variables, and then save the results back to the blob.
 
@@ -392,14 +404,14 @@ The code in this section shows how to load a Linear Regression Model from Azure 
 
 **OUTPUT:**
 
-Time taken to execute above cell: 25.00 seconds
+Time taken to execute above cell: 16.63 seconds
 
 
 ## Score classification and regression Random Forest Models
 
 The code in this section shows how to load the saved classification and regression Random Forest Models saved in Azure blob storage, score their performance with standard classifier and regression measures, and then save the results back to blob storage.
 
-[Random forests](http://spark.apache.org/docs/latest/mllib-ensembles.html#Random-Forests) are ensembles of decision trees.  They combine many decision trees in order to reduce the risk of overfitting. Random forests can handle categorical features, extend to the multiclass classification setting, do not require feature scaling, and are able to capture non-linearities and feature interactions. Random forests are one of the most successful machine learning models for classification and regression.
+[Random forests](http://spark.apache.org/docs/latest/mllib-ensembles.html#Random-Forests) are ensembles of decision trees.  They combine many decision trees to reduce the risk of overfitting. Random forests can handle categorical features, extend to the multiclass classification setting, do not require feature scaling, and are able to capture non-linearities and feature interactions. Random forests are one of the most successful machine learning models for classification and regression.
 
 [spark.mllib](http://spark.apache.org/mllib/) supports random forests for binary and multiclass classification and for regression, using both continuous and categorical features. 
 
@@ -440,7 +452,7 @@ The code in this section shows how to load the saved classification and regressi
 
 **OUTPUT:**
 
-Time taken to execute above cell: 52.2 seconds
+Time taken to execute above cell: 31.07 seconds
 
 
 ## Score classification and regression Gradient Boosting Tree Models
@@ -460,7 +472,7 @@ The code in this section shows how to load classification and regression Gradien
 	#IMPORT MLLIB LIBRARIES
 	from pyspark.mllib.tree import GradientBoostedTrees, GradientBoostedTreesModel
 	
-	# CLASSIFICATION:LOAD SAVED MODEL, SCORE AND SAVE RESULTS BACK TO BLOB
+	# CLASSIFICATION: LOAD SAVED MODEL, SCORE AND SAVE RESULTS BACK TO BLOB
 
 	#LOAD AND SCORE THE MODEL
 	savedModel = GradientBoostedTreesModel.load(sc, BoostedTreeClassificationFileLoc)
@@ -493,9 +505,10 @@ The code in this section shows how to load classification and regression Gradien
 	
 **OUTPUT:**
 
-Time taken to execute above cell: 27.73 seconds
+Time taken to execute above cell: 14.6 seconds
 
-## Cleanup objects from memory and print scored file locations
+
+## Clean up objects from memory and print scored file locations
 
 	# UNPERSIST OBJECTS CACHED IN MEMORY
 	taxi_df_test_cleaned.unpersist()
@@ -517,17 +530,17 @@ Time taken to execute above cell: 27.73 seconds
 
 **OUTPUT:**
 
-logisticRegFileLoc: LogisticRegressionWithLBFGS_2016-04-1917_22_36.354603.txt
+logisticRegFileLoc: LogisticRegressionWithLBFGS_2016-05-0317_22_38.953814.txt
 
-linearRegFileLoc: LinearRegressionWithSGD_2016-04-1917_23_06.083178
+linearRegFileLoc: LinearRegressionWithSGD_2016-05-0317_22_58.878949
 
-randomForestClassificationFileLoc: RandomForestClassification_2016-04-1917_23_33.994108.txt
+randomForestClassificationFileLoc: RandomForestClassification_2016-05-0317_23_15.939247.txt
 
-randomForestRegFileLoc: RandomForestRegression_2016-04-1917_24_00.352683.txt
+randomForestRegFileLoc: RandomForestRegression_2016-05-0317_23_31.459140.txt
 
-BoostedTreeClassificationFileLoc: GradientBoostingTreeClassification_2016-04-1917_24_21.465683.txt
+BoostedTreeClassificationFileLoc: GradientBoostingTreeClassification_2016-05-0317_23_49.648334.txt
 
-BoostedTreeRegressionFileLoc: GradientBoostingTreeRegression_2016-04-1917_24_32.371641.txt
+BoostedTreeRegressionFileLoc: GradientBoostingTreeRegression_2016-05-0317_23_56.860740.txt
 
 
 
@@ -536,23 +549,27 @@ BoostedTreeRegressionFileLoc: GradientBoostingTreeRegression_2016-04-1917_24_32.
 Spark provides a mechanism to remotely submit batch jobs or interactive queries through a REST interface with a component called Livy. Livy is enabled by default on your HDInsight Spark cluster. For more information on Livy see: [Submit Spark jobs remotely using Livy](../hdinsight/hdinsight-apache-spark-livy-rest-interface.md). 
 
 You can use Livy to remotely submit a job that batch scores a file that is stored in an Azure blob and then writes the results to another blob. To do this, you upload the Python script from  
-[Github](https://raw.githubusercontent.com/Azure/Azure-MachineLearning-DataScience/master/Misc/Spark/Python/ConsumeGBNYCReg.py) to the blob of the Spark cluster. You can use a tool like **Microsoft Azure Storage Explorer** or **AzCopy** to copy the script to the cluster blob. In our case we uploaded  the script to ***wasb:///example/python/ConsumeGBNYCReg.py***.
+[Github](https://raw.githubusercontent.com/Azure/Azure-MachineLearning-DataScience/master/Misc/Spark/Python/ConsumeGBNYCReg.py) to the blob of the Spark cluster. You can use a tool like **Microsoft Azure Storage Explorer** or **AzCopy** to copy the script to the cluster blob. In our case we uploaded  the script to ***wasb:///example/python/ConsumeGBNYCReg.py***.   
 
->AZURE.NOTE: The access keys that you need can be found on the portal for the storage account associated with the Spark cluster. 
 
-Once uploaded to this location, this script will run within the Spark cluster in a distributed context. It will load the model and run predictions on input files based on the model.  
+>[AZURE.NOTE] The access keys that you need can be found on the portal for the storage account associated with the Spark cluster. 
+
+
+Once uploaded to this location, this script runs within the Spark cluster in a distributed context. It loads the model and run predictions on input files based on the model.  
 
 You can invoke this script remotely by making a simple HTTPS/REST request on Livy.  Here is a curl command to construct the HTTP request to invoke the Python script remotely. 
-You need to replace CLUSTERLOGIN, CLUSTERPASSWORD, CLUSTERNAME with the appropriate values for your Spark cluster.
+Replace CLUSTERLOGIN, CLUSTERPASSWORD, CLUSTERNAME with the appropriate values for your Spark cluster.
 
 
 	# CURL COMMAND TO INVOKE PYTHON SCRIPT WITH HTTP REQUEST
 
     curl -k --user "CLUSTERLOGIN:CLUSTERPASSWORD" -X POST --data "{\"file\": \"wasb:///example/python/ConsumeGBNYCReg.py\"}" -H "Content-Type: application/json" https://CLUSTERNAME.azurehdinsight.net/livy/batches
 
-You can use any language on the remote system to invoke the Spark job through Livy by making a simple HTTPS call with Basic Authentication. 
+You can use any language on the remote system to invoke the Spark job through Livy by making a simple HTTPS call with Basic Authentication.   
 
->AZURE.NOTE: It would be convenient to use the Python Requests library when making this HTTP call, but it is not currently installed by default in Azure Functions. So older HTTP libraries are used instead.
+
+>[AZURE.NOTE] It would be convenient to use the Python Requests library when making this HTTP call, but it is not currently installed by default in Azure Functions. So older HTTP libraries are used instead.   
+
 
 Here is the Python code for the HTTP call:
 
@@ -581,19 +598,17 @@ Here is the Python code for the HTTP call:
 	conn.close()
 
 
-You can also add this Python code to [Azure Functions](../azure-functions/functions-overview.md)  to trigger a Spark job submission that scores a blob based on various events like a timer, creation or update of a blob. 
+You can also add this Python code to [Azure Functions](https://azure.microsoft.com/documentation/services/functions/) to trigger a Spark job submission that scores a blob based on various events like a timer, creation, or update of a blob. 
 
-If you prefer a code free client experience, use the [Azure Logic Apps](../app-service-logic/app-service-logic-create-a-logic-app.md) to invoke the Spark batch scoring by defining a HTTP action on the **Logic Apps Designer** and setting its parameters. 
+If you prefer a code free client experience, use the [Azure Logic Apps](https://azure.microsoft.com/documentation/services/app-service/logic/) to invoke the Spark batch scoring by defining an HTTP action on the **Logic Apps Designer** and setting its parameters. 
 
-- From Azure Portal, create a new Logic App by selecting **+New** -> **Web + Mobile** -> **Logic App**. 
-- Enter the name of the Logic App and App Service Plan to bring up the **Logic Apps Designer**.
+- From Azure portal, create a new Logic App by selecting **+New** -> **Web + Mobile** -> **Logic App**. 
+- To bring up the **Logic Apps Designer**, enter the name of the Logic App and App Service Plan .
 - Select an HTTP action and enter the parameters shown in the following figure:
 
 ![](./media/machine-learning-data-science-spark-model-consumption/spark-logica-app-client.png)
 
 
-## What's next?
-
-The advanced data exploration and modeling notebook dives deeper into including cross-validation, hyper-parameter sweeping and model evaluation. 
+## What's next? 
 
 **Cross-validation and hyperparameter sweeping**: See [Advanced data exploration and modeling with Spark](machine-learning-data-science-spark-advanced-data-exploration-modeling.md) on how models can be trained using cross-validation and hyper-parameter sweeping.

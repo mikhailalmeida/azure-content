@@ -1,5 +1,5 @@
 <properties 
-	pageTitle="Filters and Dynamic Manifests" 
+	pageTitle="Filters and dynamic manifests | Microsoft Azure" 
 	description="This topic describes how to create filters so your client can use them to stream specific sections of a stream. Media Services creates dynamic manifests to archive this selective streaming." 
 	services="media-services" 
 	documentationCenter="" 
@@ -13,10 +13,10 @@
 	ms.tgt_pltfrm="na" 
 	ms.devlang="ne" 
 	ms.topic="article" 
- 	ms.date="04/18/2016" 
+	ms.date="09/26/2016" 
 	ms.author="cenkdin;juliako"/>
 
-#Filters and Dynamic Manifests
+# Filters and dynamic manifests
 
 Starting with 2.11 release, Media Services enables you to define filters for your assets. These filters are server side rules that will allow your customers to choose to do things like: playback only a section of a video (instead of playing the whole video), or specify only a subset of audio and video renditions that your customer's device can handle (instead of all the renditions that are associated with the asset). This filtering of your assets is archived through **Dynamic Manifest**s that are created upon your customer's request to stream a video based on specified filter(s).
 
@@ -87,7 +87,7 @@ Smooth Streaming URL with filter
 	http://testendpoint-testaccount.streaming.mediaservices.windows.net/fecebb23-46f6-490d-8b70-203e86b0df58/BigBuckBunny.ism/Manifest(filter=MyLocalFilter)
 
 
-For more information about how to deliver your content and build streaming URLs, see [Delivering content overview](media-services-deliver-content-overview/).
+For more information about how to deliver your content and build streaming URLs, see [Delivering content overview](media-services-deliver-content-overview.md).
 
 
 >[AZURE.NOTE]Note that Dynamic Manifests do not change the asset and the default manifest for that asset. Your client can choose to request a stream with or without filters. 

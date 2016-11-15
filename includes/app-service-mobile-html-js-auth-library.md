@@ -1,8 +1,8 @@
 ###<a name="server-auth"></a>How to: Authenticate with a Provider (Server Flow)
 
-To have Mobile Services manage the authentication process in your app, you must register your app with your identity
+To have Mobile Apps manage the authentication process in your app, you must register your app with your identity
 provider. Then in your Azure App Service, you need to configure the application ID and secret provided by your provider.
-For more information, see the tutorial [Add authentication to your app].
+For more information, see the tutorial [Add authentication to your app](../articles/app-service-mobile/app-service-mobile-ios-get-started-users.md).
 
 Once you have registered your identity provider, simply call the .login() method with the name of your provider. For
 example, to login with Facebook use the following code.
@@ -12,10 +12,8 @@ client.login("facebook").done(function (results) {
      alert("You are now logged in as: " + results.userId);
 }, function (err) {
      alert("Error: " + err);
-});
-```
-
-If you are using an identity provider other than Facebook, change the value passed to the login method above to one of
+});app-service-mobile
+app-service-mobile-ios-get-started-users value passed to the login method above to one of
 the following: `microsoftaccount`, `facebook`, `twitter`, `google`, or `aad`.
 
 In this case, Azure App Service manages the OAuth 2.0 authentication flow by displaying the login page of the selected
@@ -68,11 +66,14 @@ This example gets a token from Live Connect, which is supplied to your App Servi
 ###<a name="auth-getinfo"></a>How to: Obtain information about the authenticated user
 
 The authentication information for the current user can be retrieved from the `/.auth/me` endpoint using any
-AJAX method.  For example, to use the fetch API:
+AJAX method.  Ensure you set the `X-ZUMO-AUTH` header to your authentication token.  The authentication token
+is stored in `client.currentUser.mobileServiceAuthenticationToken`.  For example, to use the fetch API:
 
 ```
 var url = client.applicationUrl + '/.auth/me';
-fetch(url)
+var headers = new Headers();
+headers.append('X-ZUMO-AUTH', client.currentUser.mobileServiceAuthenticationToken);
+fetch(url, { headers: headers })
     .then(function (data) {
         return data.json()
     }).then(function (user) {
@@ -80,4 +81,5 @@ fetch(url)
     });
 ```
 
-You could also use jQuery or another AJAX API to fetch the information.  Data will be received as a JSON object.
+Fetch is available as an npm package or for browser download from CDNJS. You could also use
+jQuery or another AJAX API to fetch the information.  Data will be received as a JSON object.

@@ -4,7 +4,7 @@
    services="active-directory"
    documentationCenter=""
    authors="AndKjell"
-   manager="stevenpo"
+   manager="femila"
    editor=""/>
 
 <tags
@@ -13,8 +13,8 @@
    ms.topic="article"
    ms.tgt_pltfrm="na"
    ms.workload="identity"
-   ms.date="04/20/2016"
-   ms.author="andkjell"/>
+   ms.date="11/01/2016"
+   ms.author="billmath"/>
 
 # Azure AD Connect: Version Release History
 
@@ -24,11 +24,57 @@ This article is designed to help you keep track of the versions that have been r
 
 This is list of related topics:
 
-| Topic |  |
-| --------- | --------- |
-| Steps to upgrade from Azure AD Connect | Different methods to [upgrade from a previous version to the latest](active-directory-aadconnect-upgrade-previous-version.md) Azure AD Connect release. |
-| Required permissions | For permissions required to apply an update, see [accounts and permissions](active-directory-aadconnect-accounts-permissions.md#upgrade) |
-| Download| [Download Azure AD Connect](http://go.microsoft.com/fwlink/?LinkId=615771) |
+Topic |  
+--------- | --------- |
+Steps to upgrade from Azure AD Connect | Different methods to [upgrade from a previous version to the latest](active-directory-aadconnect-upgrade-previous-version.md) Azure AD Connect release.
+Required permissions | For permissions required to apply an update, see [accounts and permissions](./connect/active-directory-aadconnect-accounts-permissions.md#upgrade)
+Download| [Download Azure AD Connect](http://go.microsoft.com/fwlink/?LinkId=615771)
+
+## 1.1.281.0
+Released: 2016 August
+
+**Fixed issues:**
+
+- Changes to sync interval does not take place until after next sync cycle completes.
+- Azure AD Connect wizard does not accept Azure AD account whose username starts with an underscore (\_).
+- Azure AD Connect wizard fails to authenticate Azure AD account provided if account password contains too many special characters. Error message "Unable to validate credentials. An unexpected error has occurred." is returned.
+- Uninstalling staging server disables password synchronization in Azure AD tenant and causes password synchronization to fail with active server.
+- Password synchronization fails in uncommon cases when there is no password hash stored on the user.
+- When Azure AD Connect server is enabled for staging mode, password writeback is not temporarily disabled.
+- Azure AD Connect wizard does not show the actual password synchronization and password writeback configuration when server is in staging mode. It always shows them as disabled.
+- Configuration changes to password synchronization and password writeback are not persisted by Azure AD Connect wizard when server is in staging mode.
+
+**Improvements:**
+
+- Updated Start-ADSyncSyncCycle cmdlet to indicate whether it is able to successfully start a new sync cycle or not.
+- Added Stop-ADSyncSyncCycle cmdlet to terminate sync cycle and operation which are currently in progress.
+- Updated Stop-ADSyncScheduler cmdlet to terminate sync cycle and operation which are currently in progress.
+- When configuring [Directory Extensions](active-directory-aadconnectsync-feature-directory-extensions.md) in Azure AD Connect wizard, AD attribute of type "Teletex string" can now be selected.
+
+## 1.1.189.0
+Released: 2016 June
+
+**Fixed issues and improvements:**
+
+- Azure AD Connect can now be installed on a FIPS compliant server.
+    - For password synchronization, see [Password Sync and FIPS](active-directory-aadconnectsync-implement-password-synchronization.md#password-synchronization-and-fips)
+- Fixed an issue where a NetBIOS name could not be resolved to the FQDN in the Active Directory Connector.
+
+## 1.1.180.0
+Released: 2016 May
+
+**New features:**
+
+- Warns and helps you verifying domains if you didn’t do it before running Azure AD Connect.
+- Added support for [Microsoft Cloud Germany](active-directory-aadconnect-instances.md#microsoft-cloud-germany).
+- Added support for the latest [Microsoft Azure Government cloud](active-directory-aadconnect-instances.md#microsoft-azure-government-cloud) infrastructure with new URL requirements.
+
+**Fixed issues and improvements:**
+
+- Added filtering to the Sync Rule Editor to make it easy to find sync rules.
+- Improved performance when deleting a connector space.
+- Fixed an issues when the same object was both deleted and added in the same run (called delete/add).
+- A disabled Sync Rule will no longer re-enable included objects and attributes on upgrade or directory schema refresh.
 
 ## 1.1.130.0
 Released: 2016 April
@@ -68,7 +114,7 @@ Released: 2016 February
     - You need to allow your proxy to also allow traffic to https://secure.aadcdn.microsoftonline-p.com if you use MFA.
     - You need to add https://secure.aadcdn.microsoftonline-p.com to your trusted sites list for MFA to properly work.
 - Allow changing the user's sign-in method after initial install.
-- Allow [Domain and OU filtering](active-directory-aadconnect-get-started-custom.md#domain-and-ou-filtering) in the installation wizard. This also allows connecting to forests where not all domains are available.
+- Allow [Domain and OU filtering](./connect/active-directory-aadconnect-get-started-custom.md#domain-and-ou-filtering) in the installation wizard. This also allows connecting to forests where not all domains are available.
 - [Scheduler](active-directory-aadconnectsync-feature-scheduler.md) is built-in to the sync engine.
 
 **Features promoted from preview to GA:**
@@ -109,7 +155,7 @@ Released: 2015 November
 **New preview features:**
 
 - [Azure AD Connect Health for sync](active-directory-aadconnect-health-sync.md).
-- Support for [Azure AD Domain Services](active-directory-get-started.md) password synchronization.
+- Support for [Azure AD Domain Services](active-directory-passwords-getting-started.md#enable-users-to-reset-or-change-their-ad-passwords) password synchronization.
 
 **New supported scenario:**
 
@@ -122,7 +168,7 @@ Released: 2015 November
     - Selecting a new OU to include in sync does not require a full password sync.
     - When a disabled user is enabled the password does not sync.
     - The password retry queue is infinite and the previous limit of 5,000 objects to be retired has been removed.
-    - [Improved troubleshooting](active-directory-aadconnectsync-implement-password-synchronization.md#troubleshoot-password-synchronization).
+    - [Improved troubleshooting](active-directory-aadconnectsync-implement-password-synchronization.md#troubleshooting-password-synchronization).
 - Not able to connect to Active Directory with Windows Server 2016 forest-functional level.
 - Not able to change the group used for group filtering after initial install.
 - Will no longer create a new user profile on the Azure AD Connect server for every user doing a password change with password writeback enabled.
@@ -163,9 +209,9 @@ Changed name from Azure AD Sync to Azure AD Connect.
 
 **New features:**
 
-- [Express settings](active-directory-aadconnect-get-started-express.md) installation
-- Can [configure ADFS](active-directory-aadconnect-get-started-custom.md#configuring-federation-with-ad-fs)
-- Can [upgrade from DirSync](active-directory-aadconnect-dirsync-upgrade-get-started.md)
+- [Express settings](./connect/active-directory-aadconnect-get-started-express.md) installation
+- Can [configure ADFS](./connect/active-directory-aadconnect-get-started-custom.md#configuring-federation-with-ad-fs)
+- Can [upgrade from DirSync](./connect/active-directory-aadconnect-dirsync-upgrade-get-started.md)
 - [Prevent accidental deletes](active-directory-aadconnectsync-feature-prevent-accidental-deletes.md)
 - Introduced [staging mode](active-directory-aadconnectsync-operations.md#staging-mode)
 
@@ -174,7 +220,7 @@ Changed name from Azure AD Sync to Azure AD Connect.
 - [User writeback](active-directory-aadconnect-feature-preview.md#user-writeback)
 - [Group writeback](active-directory-aadconnect-feature-preview.md#group-writeback)
 - [Device writeback](active-directory-aadconnect-feature-device-writeback.md)
-- [Directory extensions](active-directory-aadconnect-feature-preview.md#directory-extensions)
+- [Directory extensions](active-directory-aadconnect-feature-preview.md)
 
 
 ## 1.0.494.0501
@@ -245,7 +291,7 @@ Released: 2014 October
 
 **New features:**
 
-- Password synchronization from multiple on-premise AD to Azure AD.
+- Password synchronization from multiple on-premises AD to Azure AD.
 - Localized installation UI to all Windows Server languages.
 
 **Upgrading from AADSync 1.0 GA**

@@ -1,45 +1,45 @@
-<properties 
-	pageTitle="How to use Azure Media Services with Java" 
-	description="Describes how to use Azure Media Services to perform common tasks including encoding, encrypting, and streaming resources." 
-	services="media-services" 
-	documentationCenter="java" 
-	authors="rmcmurray" 
-	manager="wpickett" 
-	editor="jimbe"/>
+<properties
+	pageTitle="Get started with delivering content on demand using Java | Microsoft Azure"
+	description="Describes how to use Azure Media Services to perform common tasks including encoding, encrypting, and streaming resources."
+	services="media-services"
+	documentationCenter="java"
+	authors="juliako"
+	manager="erikre"
+	editor=""/>
 
-<tags 
-	ms.service="media-services" 
-	ms.workload="media" 
-	ms.tgt_pltfrm="na" 
-	ms.devlang="na" 
+<tags
+	ms.service="media-services"
+	ms.workload="media"
+	ms.tgt_pltfrm="na"
+	ms.devlang="java"
 	ms.topic="get-started-article"
- 	ms.date="04/18/2016"  
-	ms.author="robmcm"/>
+	ms.date="10/19/2016" 
+	ms.author="juliako"/>
 
-#How to use Media Services with Java
+# Get started with delivering content on demand using Java
 
 [AZURE.INCLUDE [media-services-selector-get-started](../../includes/media-services-selector-get-started.md)]
 
-##Setting Up an Azure Account for Media Services
+## Setting Up an Azure Account for Media Services
 
-To set up your Media Services account, use the Azure Classic Portal. See the topic [How to Create a Media Services Account](media-services-create-account.md). After creating your account in the Azure Classic Portal, you are ready to set up your computer for Media Services development.
+To set up your Media Services account, use the Azure Classic Portal. See the topic [How to Create a Media Services Account](media-services-portal-create-account.md). After creating your account in the Azure Classic Portal, you are ready to set up your computer for Media Services development.
 
-##Setting up for Media Services development
+## Setting up for Media Services development
 
 This section contains general prerequisites for Media Services development using the Media Services SDK for Java.
 
-###Prerequisites
+### Prerequisites
 
--   A Media Services account in a new or existing Azure subscription. See the topic [How to Create a Media Services Account](media-services-create-account.md).
--   The Azure Libraries for Java, which you can install from the [Azure Java Developer Center][].
+- A Media Services account in a new or existing Azure subscription. See the topic [How to Create a Media Services Account](media-services-portal-create-account.md).
+- The Azure Libraries for Java, which you can install from the [Azure Java Developer Center][].
 
-##How to: Use Media Services with Java
+## How to: Use Media Services with Java
 
-The following code shows how to create an asset, upload a media file to the asset, run a job with a task to transform the asset, and create a locator in order to stream your video.
+The following code shows how to create an asset, upload a media file to the asset, run a job with a task to transform the asset, and create a locator to stream your video.
 
-You'll need to set up a media services account before using this code. For information about setting up an account, see [How to Create a Media Services Account](media-services-create-account.md).
+You need to set up a Media Services account before using this code. For information about setting up an account, see [How to Create a Media Services Account](media-services-portal-create-account.md).
 
-Substitute your values for the `clientId` and `clientSecret` variables. The code also relies on a locally stored file. You'll need to provide your own file to use.
+Substitute your values for the 'clientId' and 'clientSecret' variables. The code also relies on a locally stored file. You'll need to provide your own file to use.
 	
 	import java.io.*;
 	import java.security.NoSuchAlgorithmException;
@@ -68,7 +68,6 @@ Substitute your values for the `clientId` and `clientSecret` variables. The code
 	import com.microsoft.windowsazure.services.media.models.MediaProcessor;
 	import com.microsoft.windowsazure.services.media.models.MediaProcessorInfo;
 	import com.microsoft.windowsazure.services.media.models.Task;
-	
 	
 	public class HelloMediaServices
 	{
@@ -255,23 +254,20 @@ Substitute your values for the `clientId` and `clientSecret` variables. The code
 	}
 
 
-##Media Services learning paths
+## Media Services learning paths
 
 [AZURE.INCLUDE [media-services-learning-paths-include](../../includes/media-services-learning-paths-include.md)]
 
-##Provide feedback
+## Provide feedback
 
 [AZURE.INCLUDE [media-services-user-voice-include](../../includes/media-services-user-voice-include.md)]
 
-
-##Additional Resources
+## Additional Resources
 
 For Media Services Javadoc documentation, see [Azure Libraries for Java documentation][].
 
 <!-- URLs. -->
 
-  [Azure Java Developer Center]: http://azure.microsoft.com/develop/java/
-  [Azure Libraries for Java documentation]: http://dl.windowsazure.com/javadoc/
-  [Media Services Client Development]: http://msdn.microsoft.com/library/windowsazure/dn223283.aspx
-
- 
+[Azure Java Developer Center]: http://azure.microsoft.com/develop/java/
+[Azure Libraries for Java documentation]: http://dl.windowsazure.com/javadoc/
+[Media Services Client Development]: http://msdn.microsoft.com/library/windowsazure/dn223283.aspx

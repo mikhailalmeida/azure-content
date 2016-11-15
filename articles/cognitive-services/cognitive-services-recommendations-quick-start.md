@@ -3,8 +3,8 @@
 	description="Azure Machine Learning Recommendations - Quick Start Guide"
 	services="cognitive-services"
 	documentationCenter=""
-	authors="luisca"
-	manager="paulettm"
+	authors="luiscabrer"
+	manager="jhubbard"
 	editor="cgronlun"/>
 
 <tags
@@ -13,7 +13,7 @@
 	ms.tgt_pltfrm="na"
 	ms.devlang="na"
 	ms.topic="article"
-	ms.date="03/14/2016"
+	ms.date="08/22/2016"
 	ms.author="luisca"/>
 
 # Quick start guide for the Cognitive Services Recommendations API
@@ -63,8 +63,8 @@ This product will allow you to start a subscription for any of the cognitive ser
 
 1. On **API type**, select **Recommendations**.
 
-1. On **Pricing tier**, you can select a plan. You may select the **Free** tier for 10,000 transactions/month**. This is a free plan, so it is a good way to start trying the system. Once you go to production, we recommend you consider your request volume
-and change the plan type accordingly.
+1. On **Pricing tier**, you can select a plan. You may select the **Free** tier for 10,000 transactions/month. This is a free plan, so it is a good way to start trying the system. Once you go to production, we recommend you consider your request volume
+and change the plan type accordingly. (Note: You can have only one Free tier subscription at a time)
 
 1. Select a **Resource Group**, or create a new one if you don't have one already.
 
@@ -150,6 +150,8 @@ In this task, you will use the sample application to build your first model.
 
 1. When the model is created, take note of the **model ID** as you will need it when
 requesting recommendations in your production environment.
+
+>  Learn more about build types and how to evaluate the quality of builds [here](cognitive-services-recommendations-buildtypes.md).
 
 <a name="Ex1Task4"></a>
 ### Putting your model in production! ###

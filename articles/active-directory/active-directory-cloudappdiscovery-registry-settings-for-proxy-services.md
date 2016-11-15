@@ -3,8 +3,8 @@
 	description="The objective of this topic is to provide you with the steps you need to perform to set the required port on the computers running the Cloud App Discovery agent." 
 	services="active-directory" 
 	documentationCenter="" 
-	authors="markusvi" 
-	manager="stevenpo"/>
+	authors="MarkusVi" 
+	manager="femila"/>
 
 <tags 
 	ms.service="active-directory" 
@@ -12,7 +12,7 @@
 	ms.tgt_pltfrm="na" 
 	ms.devlang="na" 
 	ms.topic="article" 
-	ms.date="04/07/2016" 
+	ms.date="10/10/2016" 
 	ms.author="markusvi"/>
 
 # Cloud App Discovery Registry Settings for Proxy Services

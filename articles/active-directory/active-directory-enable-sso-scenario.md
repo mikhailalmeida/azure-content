@@ -3,8 +3,8 @@
     description="This article the benefits of integrating Azure Active Directory with your on-premises, cloud and SaaS applications."
     services="active-directory"
     documentationCenter=""
-    authors="markusvi"
-    manager="stevenpo"
+    authors="MarkusVi"
+    manager="femila"
     editor=""/>
 
    <tags
@@ -13,7 +13,7 @@
       ms.topic="article"
       ms.tgt_pltfrm="na"
       ms.workload="identity"
-      ms.date="02/16/2016"
+      ms.date="10/10/2016"
       ms.author="markvi"/>
 
 # Managing Applications with Azure Active Directory

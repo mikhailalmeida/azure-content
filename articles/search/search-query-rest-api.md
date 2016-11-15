@@ -3,6 +3,7 @@
     description="Build a search query in Azure search and use search parameters to filter and sort search results."
     services="search"
     documentationCenter=""
+    manager="jhubbard"
 	authors="ashmaka"
 />
 
@@ -12,7 +13,7 @@
     ms.workload="search"
     ms.topic="get-started-article"
     ms.tgt_pltfrm="na"
-    ms.date="03/10/2016"
+    ms.date="08/29/2016"
     ms.author="ashmaka"/>
 
 # Query your Azure Search index using the REST API

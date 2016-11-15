@@ -4,7 +4,7 @@
    services="storsimple"
    documentationCenter="NA"
    authors="SharS"
-   manager="carolz"
+   manager="carmonm"
    editor="" />
 <tags 
    ms.service="storsimple"
@@ -12,7 +12,7 @@
    ms.topic="article"
    ms.tgt_pltfrm="NA"
    ms.workload="TBD"
-   ms.date="01/29/2016"
+   ms.date="05/16/2016"
    ms.author="v-sharos" />
 
 # Troubleshoot an operational StorSimple device
@@ -54,8 +54,8 @@ Errors are listed in numeric order.
 |Error Number|Error text or description|Recommended user action|
 |:---|:---|:---|
 |10502|An error was encountered while accessing your storage account.|Wait for a few minutes and then try again. If the error persists, please Contact Microsoft Support for next steps.|
-|40017|Unable to resolve a disk in a backup set.|If the error persists, please Contact Microsoft Support for next steps.|
-|40018|Unable to resolve any of the disks in  backup set.|If the error persists, please Contact Microsoft Support for next steps.|
+|40017|The backup operation has failed as a volume specified in the backup policy was not found on the device.|Retry the backup operation, if the error persists, contact Microsoft Support. for next steps.|
+|40018|The backup operation has failed as none of the volumes specified in the backup policy were found on the device. |Retry the backup operation, if the error persists, contact Microsoft Support. for next steps.|
 |390061|The system is busy or unavailable.|Wait for a few minutes and then try again. If the error persists, please Contact Microsoft Support for next steps.|
 |390143|An error has occurred with error code 390143. (Unknown error.)|If the error persists, please contact Microsoft Support for next steps.|
 

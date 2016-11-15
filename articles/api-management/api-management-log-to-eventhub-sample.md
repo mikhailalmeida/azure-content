@@ -4,7 +4,7 @@
     services="api-management"
     documentationCenter=""
     authors="darrelmiller"
-    manager=""
+    manager="erikre"
     editor=""/>
 
 <tags
@@ -13,8 +13,8 @@
     ms.tgt_pltfrm="na"
     ms.devlang="dotnet"
     ms.topic="article"
-    ms.date="02/19/2016"
-    ms.author="v-darmi"/>
+    ms.date="10/25/2016"
+    ms.author="darrmi"/>
 
 # Monitor your APIs with Azure API Management, Event Hubs and Runscope
 

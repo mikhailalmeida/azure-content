@@ -4,7 +4,7 @@
    services="hdinsight"
    documentationCenter=""
    authors="Blackmist"
-   manager="paulettm"
+   manager="jhubbard"
    editor="cgronlun"
 	tags="azure-portal"/>
 
@@ -14,7 +14,7 @@
    ms.topic="article"
    ms.tgt_pltfrm="na"
    ms.workload="big-data"
-   ms.date="04/22/2016"
+   ms.date="10/31/2016"
    ms.author="larryfr"/>
 
 #Manage HDInsight clusters by using the Ambari Web UI
@@ -24,8 +24,6 @@
 Apache Ambari simplifies the management and monitoring of a Hadoop cluster by providing an easy to use web UI and REST API. Ambari is included on Linux-based HDInsight clusters, and is used to monitor the cluster and make configuration changes.
 
 In this document, you will learn how to use the Ambari Web UI with an HDInsight cluster.
-
-> [AZURE.NOTE] The information in this article applies only to Linux-based HDInsight clusters. For Windows-based HDInsight clusters, only monitoring through the Ambari REST API is available. See [Monitor Windows-based Hadoop on HDInsight using the Ambari API](hdinsight-monitor-use-ambari-api.md).
 
 ##<a id="whatis"></a>What is Ambari?
 
@@ -145,7 +143,9 @@ Selecting any of these links will open a new tab in your browser, which will dis
 
 ###Ambari users, groups, and permissions
 
-Managing users, groups, and permissions should not be used with HDInsight clusters.
+Working with users, groups, and permissions is supported when using a [domain joined](hdinsight-domain-joined-introduction.md) HDInsight cluster. For information on using the Ambari Management UI on a domain-joined cluster, see [Manage domain-joined HDInsight clusters](hdinsight-domain-joined-introduction.md).
+
+> [AZURE.WARNING] Do not change the password of the Ambari watchdog (hdinsightwatchdog) on your Linux-based HDInsight cluster. Changing the password will break the ability to use script actions or perform scaling operations with your cluster.
 
 ###Hosts
 

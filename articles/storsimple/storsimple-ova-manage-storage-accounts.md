@@ -12,10 +12,10 @@
    ms.topic="article"
    ms.tgt_pltfrm="NA"
    ms.workload="TBD"
-   ms.date="03/02/2016"
+   ms.date="09/29/2016"
    ms.author="alkohli" />
 
-# Use the StorSimple Manager service to manage your storage account
+# Use the StorSimple Manager service to manage storage accounts for StorSimple Virtual Array
 
 ## Overview
 
@@ -50,13 +50,17 @@ There are three types of storage accounts that can be used with your StorSimple 
 - **Storage accounts in the service subscription** – These are the Azure storage accounts that are associated with the same subscription as that of the service. To learn more about how these storage accounts are created, see [About Azure Storage Accounts](../storage/storage-create-storage-account.md). 
 - **Storage accounts outside of the service subscription** – These are the Azure storage accounts that are not associated with your service and likely existed before the service was created.
 
+Each StorSimple Virtual Array creates a container (with a prefix hcs) in the associated storage account. This container has all the cloud data for your device. Do not delete this container by accessing it through the Azure Storage service as this action will result in data loss.
+
 ## Add a storage account
 
 You can add a storage account to your StorSimple Manager service configuration by providing a unique friendly name and access credentials that are linked to the storage account. You also have the option of enabling the secure sockets layer (SSL) mode to create a secure channel for network communication between your device and the cloud.
 
 You can create multiple accounts for a given cloud service provider. While the storage account is being saved, the service attempts to communicate with your cloud service provider. The credentials and the access material that you supplied will be authenticated at this time. A storage account is created only if the authentication succeeds. If the authentication fails, then an appropriate error message will be displayed.
 
-The procedure for adding a storage account is detailed below.
+Resource Manager storage accounts created in Azure portal are also supported with StorSimple. The Resource Manager storage accounts will not show up in the drop-down list for selection, only the storage accounts created in the Azure classic portal will be displayed. Resource Manager storage accounts will need to be added using the procedure to add a storage account as described below.
+
+The procedure for adding an Azure classic storage account is detailed below.
 
 [AZURE.INCLUDE [add-a-storage-account](../../includes/storsimple-ova-configure-new-storage-account.md)]
 

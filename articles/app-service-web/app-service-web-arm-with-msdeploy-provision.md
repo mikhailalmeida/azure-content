@@ -2,6 +2,7 @@
 	pageTitle="Deploy a web app using MSDeploy with hostname and ssl certificate"
 	description="Use an Azure Resource Manager template to deploy a web app using MSDeploy and setting up custom hostname and a SSL certificate"
 	services="app-service\web"
+	manager="erikre"
 	documentationCenter=""
 	authors="jodehavi"
 	/>
@@ -12,7 +13,7 @@
 	ms.tgt_pltfrm="na"
 	ms.devlang="na"
 	ms.topic="article"
-	ms.date="02/26/2016"
+	ms.date="05/31/2016"
 	ms.author="john.dehavilland"/>
 
 # Deploy a web app with MSDeploy, custom hostname and SSL certificate

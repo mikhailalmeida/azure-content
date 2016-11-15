@@ -13,18 +13,18 @@
    ms.topic="article"
    ms.tgt_pltfrm="NA"
    ms.workload="NA"
-   ms.date="03/08/2016"
+   ms.date="11/01/2016"
    ms.author="seanmck"/>
 
 # Manage application parameters for multiple environments
 
 You can create Azure Service Fabric clusters by using anywhere from one to many thousands of machines. While application binaries can run without modification across this wide spectrum of environments, you will often want to configure the application differently, depending on the number of machines you're deploying to.
 
-As a simple example, consider `InstanceCount` for a stateless service. When you are running applications in Azure, you will generally want to set this parameter to the special value of "-1". This ensures that your service is running on every node in the cluster. However, this configuration is not suitable for a single-machine cluster since you can't have multiple processes listening on the same endpoint on a single machine. Instead, you will typically set `InstanceCount` to "1".
+As a simple example, consider `InstanceCount` for a stateless service. When you are running applications in Azure, you will generally want to set this parameter to the special value of "-1". This ensures that your service is running on every node in the cluster (or every node in the node type if you have set a placement constraint). However, this configuration is not suitable for a single-machine cluster since you can't have multiple processes listening on the same endpoint on a single machine. Instead, you will typically set `InstanceCount` to "1".
 
 ## Specifying environment-specific parameters
 
-The solution to this configuration issue is a set of parameterized default services and application parameter files that fill in those parameter values for a given environment.
+The solution to this configuration issue is a set of parameterized default services and application parameter files that fill in those parameter values for a given environment. Default services and application parameters are configured in the application and service manifests. The schema definition for the ServiceManifest.xml and ApplicationManifest.xml files is installed with the Service Fabric SDK and tools to *C:\Program Files\Microsoft SDKs\Service Fabric\schemas\ServiceFabricServiceModel.xsd*.
 
 ### Default services
 
@@ -33,10 +33,13 @@ Service Fabric applications are made up of a collection of service instances. Wh
     <DefaultServices>
         <Service Name="Stateful1">
             <StatefulService
-                ServiceTypeName="Stateful1Type" TargetReplicaSetSize="[Stateful1_TargetReplicaSetSize]" MinReplicaSetSize="[Stateful1_MinReplicaSetSize]">
+                ServiceTypeName="Stateful1Type"
+                TargetReplicaSetSize="[Stateful1_TargetReplicaSetSize]"
+                MinReplicaSetSize="[Stateful1_MinReplicaSetSize]">
 
                 <UniformInt64Partition
-                    PartitionCount="[Stateful1_PartitionCount]" LowKey="-9223372036854775808"
+                    PartitionCount="[Stateful1_PartitionCount]"
+                    LowKey="-9223372036854775808"
                     HighKey="9223372036854775807"
                 />
         </StatefulService>
@@ -98,7 +101,7 @@ The Service Fabric application project can include one or more application param
         </Parameters>
     </Application>
 
-By default, a new application includes two application parameter files, named Local.xml and Cloud.xml:
+By default, a new application includes three application parameter files, named Local.1Node.xml, Local.5Node.xml, and Cloud.xml:
 
 ![Application parameter files in Solution Explorer][app-parameters-solution-explorer]
 
@@ -116,9 +119,11 @@ You can choose from the list of available parameter files when you publish your 
 
 ### Deploy from PowerShell
 
-The `DeployCreate-FabricApplication.ps1` PowerShell script accepts a parameter file as a parameter.
+The `Deploy-FabricApplication.ps1` PowerShell script included in the application project template accepts a publish profile as a parameter and the PublishProfile contains a reference to the application parameters file.
 
-    ./DeployCreate-FabricApplication -ApplicationPackagePath <app_package_path> -ApplicationDefinitionFilePath <app_instance_definition_path>
+  ```PowerShell
+    ./Deploy-FabricApplication -ApplicationPackagePath <app_package_path> -PublishProfileFile <publishprofile_path>
+  ```
 
 ## Next steps
 

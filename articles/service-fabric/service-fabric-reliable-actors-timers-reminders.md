@@ -13,12 +13,12 @@
    ms.topic="article"
    ms.tgt_pltfrm="NA"
    ms.workload="NA"
-   ms.date="03/25/2016"
+   ms.date="10/19/2016"
    ms.author="vturecek"/>
 
 
 # Actor timers and reminders
-Actors can schedule periodic work on themselves by register either timers or reminders. This article shows how to use timers and reminders and explains the differences between them.
+Actors can schedule periodic work on themselves by registering either timers or reminders. This article shows how to use timers and reminders and explains the differences between them.
 
 ## Actor timers
 Actor timers provide a simple wrapper around .NET timer to ensure that the callback methods respect the turn-based concurrency guarantees that the Actors runtime provides.
@@ -29,6 +29,11 @@ Actors can use the `RegisterTimer` and `UnregisterTimer` methods on their base c
 class VisualObjectActor : Actor, IVisualObject
 {
     private IActorTimer _updateTimer;
+
+    public VisualObjectActor(ActorService actorService, ActorId actorId)
+        : base(actorService, actorId)
+    {
+    }
 
     protected override Task OnActivateAsync()
     {
@@ -93,6 +98,11 @@ Actors that use reminders must implement the `IRemindable` interface, as shown i
 ```csharp
 public class ToDoListActor : Actor, IToDoListActor, IRemindable
 {
+    public ToDoListActor(ActorService actorService, ActorId actorId)
+        : base(actorService, actorId)
+    {
+    }
+
     public Task ReceiveReminderAsync(string reminderName, byte[] context, TimeSpan dueTime, TimeSpan period)
     {
         if (reminderName.Equals("Pay cell phone bill"))
@@ -107,16 +117,16 @@ public class ToDoListActor : Actor, IToDoListActor, IRemindable
 
 When a reminder is triggered, the Reliable Actors runtime will invoke the  `ReceiveReminderAsync` method on the Actor. An actor can register multiple reminders, and the `ReceiveReminderAsync` method is invoked when any of those reminders is triggered. The actor can use the reminder name that is passed in to the `ReceiveReminderAsync` method to figure out which reminder was triggered.
 
-The Actors runtime saves the actor state when the `ReceiveReminderAsync` call finishes. If an error occurs in saving the state, that actor object will be deactivated and a new instance will be activated. To specify that the state need not be saved upon completion of the reminder callback, the `ActorReminderAttributes.ReadOnly` flag can be set in the `attributes` parameter when the `RegisterReminder` method is called to create the reminder.
+The Actors runtime saves the actor's state when the `ReceiveReminderAsync` call finishes. If an error occurs in saving the state, that actor object will be deactivated and a new instance will be activated. 
 
-To unregister a reminder, an actor calls the `UnregisterReminder` method, as shown in the example below.
+To unregister a reminder, an actor calls the `UnregisterReminderAsync` method, as shown in the example below.
 
 ```csharp
 IActorReminder reminder = GetReminder("Pay cell phone bill");
-Task reminderUnregistration = UnregisterReminder(reminder);
+Task reminderUnregistration = UnregisterReminderAsync(reminder);
 ```
 
-As shown above, the `UnregisterReminder` method accepts an `IActorReminder` interface. The actor base class supports a `GetReminder` method that can be used to retrieve the `IActorReminder` interface by passing in the reminder name. This is convenient because the actor does not need to persist the `IActorReminder` interface that was returned from the `RegisterReminder` method call.
+As shown above, the `UnregisterReminderAsync` method accepts an `IActorReminder` interface. The actor base class supports a `GetReminder` method that can be used to retrieve the `IActorReminder` interface by passing in the reminder name. This is convenient because the actor does not need to persist the `IActorReminder` interface that was returned from the `RegisterReminder` method call.
 
 ## Next Steps
  - [Actor events](service-fabric-reliable-actors-events.md)

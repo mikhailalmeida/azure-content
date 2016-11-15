@@ -13,7 +13,7 @@
    ms.topic="article"
    ms.tgt_pltfrm="na"
    ms.workload="required"
-   ms.date="03/25/2016"
+   ms.date="10/19/2016"
    ms.author="vturecek"/>
 
 # Service remoting with Reliable Services
@@ -36,17 +36,17 @@ using Microsoft.ServiceFabric.Services.Runtime;
 
 public interface IMyService : IService
 {
-    Task<string> GetHelloWorld();
+    Task<string> HelloWorldAsync();
 }
 
 class MyService : StatelessService, IMyService
 {
     public MyService(StatelessServiceContext context)
         : base (context)
-{
+    {
     }
 
-    public Task HelloWorld()
+    public Task HelloWorldAsync()
     {
         return Task.FromResult("Hello!");
     }
@@ -67,9 +67,9 @@ Calling methods on a service by using the remoting stack is done by using a loca
 
 ```csharp
 
-IHelloWorldStateful helloWorldClient = ServiceProxy.Create<IHelloWorldStateful>(new Uri("fabric:/MyApplication/MyHelloWorldService"));
+IMyService helloWorldClient = ServiceProxy.Create<IMyService>(new Uri("fabric:/MyApplication/MyHelloWorldService"));
 
-string message = await helloWorldClient.GetHelloWorld();
+string message = await helloWorldClient.HelloWorldAsync();
 
 ```
 

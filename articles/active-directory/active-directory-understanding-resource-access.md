@@ -3,8 +3,8 @@
     description="This topic explains concepts about using subscription administrators to control resource access in the full Azure portal."
     services="active-directory"
     documentationCenter=""
-    authors="markusvi"
-    manager="stevenpo"
+    authors="MarkusVi"
+    manager="femila"
     editor=""/>
 
 <tags
@@ -13,7 +13,7 @@
     ms.tgt_pltfrm="na"
     ms.devlang="na"
     ms.topic="article"
-    ms.date="02/11/2016"
+    ms.date="10/10/2016"
     ms.author="markusvi"/>
 
 

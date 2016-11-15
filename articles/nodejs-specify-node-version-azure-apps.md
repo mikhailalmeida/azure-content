@@ -4,7 +4,7 @@
 	services=""
 	documentationCenter="nodejs"
 	authors="rmcmurray"
-	manager="wpickett"
+	manager="erikre"
 	editor=""/>
 
 <tags
@@ -13,7 +13,7 @@
 	ms.tgt_pltfrm="na"
 	ms.devlang="nodejs"
 	ms.topic="article"
-	ms.date="03/04/2016"
+	ms.date="11/01/2016"
 	ms.author="robmcm"/>
 
 # Specifying a Node.js version in an Azure application
@@ -22,7 +22,7 @@ When hosting a Node.js application, you may want to ensure that your application
 
 ##Default versions
 
-The Node.js versions provided by Azure are constantly updated. Unless otherwise specified, the latest available version will be used.
+The Node.js versions provided by Azure are constantly updated. Unless otherwise specified, the default version that is specified in the `WEBSITE_NODE_DEFAULT_VERSION` environment variable will be used. To override this default value, follow the steps in following sections of this article
 
 > [AZURE.NOTE] If you are hosting your application in an Azure Cloud Service (web or worker role,) and it is the first time you have deployed the application, Azure will attempt to use the same version of Node.js as you have installed on your development environment if it matches one of the default versions available on Azure.
 
@@ -39,7 +39,7 @@ Where *version* is the specific version number to use. You can  can specify more
 Since 0.6.22 is not one of the versions available in the hosting environment, the highest version of the 0.8 series that is available will be used instead - 0.8.4.
 
 ##Versioning Websites with App Settings
-If you are hosting the application in a Website, you can set the environment variable **WEBSITE_NODE_DEFAULT_VERSION** to the desired version. 
+If you are hosting the application in a Website, you can set the environment variable **WEBSITE_NODE_DEFAULT_VERSION** to the desired version.
 
 ##Versioning Cloud Services with PowerShell
 
@@ -93,7 +93,7 @@ While Azure provides several default versions of Node.js, you may want to use a 
 
 ##Next Steps
 
-Now that you understand how to specify the version of Node.js used by your application, learn how to [work with modules], [build and deploy a Node.js Web Site], and [How to use the Azure Command-Line Tools for Mac and Linux].
+Now that you understand how to specify the version of Node.js used by your application, learn how to [work with modules], [build and deploy a Node.js Web Site](./app-service-web/web-sites-nodejs-develop-deploy-mac.md), and [How to use the Azure Command-Line Tools for Mac and Linux].
 
 For more information, see the [Node.js Developer Center](/develop/nodejs/).
 

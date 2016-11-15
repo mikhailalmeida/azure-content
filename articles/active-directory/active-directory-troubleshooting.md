@@ -3,7 +3,7 @@
    description="What to do when Active Directory menu item doesn't appear in the Azure Management Portal."
    services="active-directory"
    documentationCenter="na"
-   authors="msmbaldwin"
+   authors="bryanla"
    manager="mbaldwin"
    editor=""/>
 
@@ -13,7 +13,7 @@
    ms.topic="article"
    ms.tgt_pltfrm="na"
    ms.workload="identity"
-   ms.date="12/04/2015"
+   ms.date="09/16/2016"
    ms.author="mbaldwin"/>
 
 # Troubleshooting: 'Active Directory' item is missing or not available
@@ -40,7 +40,7 @@ The Active Directory item appears in the left navigation menu when any of the fo
 
     OR
 
-* The Azure tenant has at least one Azure Multi-Factor Authentication provider. For more information, see [Administering Azure Multi-Factor Authentication Providers](multi-factor-authentication-get-started-cloud.md/creating-an-azure-multi-factor-auth-provider).
+* The Azure tenant has at least one Azure Multi-Factor Authentication provider. For more information, see [Administering Azure Multi-Factor Authentication Providers](../multi-factor-authentication/multi-factor-authentication-get-started-cloud.md).
 
 To create an Access Control namespace or a Multi-Factor Authentication provider, click **+New** > **App Services** > **Active Directory**.
 

@@ -3,8 +3,8 @@
 	description="By configuring known networks, you can avoid having IP addresses that are owned by your organization included in the Sign ins from multiple geographies and Sign ins from IP addresses with suspicious activity reports." 
 	services="active-directory" 
 	documentationCenter="" 
-	authors="markusvi" 
-	manager="stevenpo"  
+	authors="MarkusVi" 
+	manager="femila"  
 	editor=""/>
 
 <tags 
@@ -13,7 +13,7 @@
 	ms.tgt_pltfrm="na" 
 	ms.devlang="na" 
 	ms.topic="article" 
-	ms.date="02/18/2016" 
+	ms.date="10/10/2016" 
 	ms.author="markvi"/>
 
 # Known Networks

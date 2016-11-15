@@ -13,7 +13,7 @@
 	ms.tgt_pltfrm="na"
 	ms.devlang="dotnet"
 	ms.topic="article"
-	ms.date="02/03/2016"
+	ms.date="07/30/2016"
 	ms.author="tarcher"/>
 
 # Continuous Delivery for Cloud Services in Azure
@@ -31,7 +31,7 @@ Foundation Server - Team Build definitions to use the MSBuild commands
 and PowerShell scripts. The process is customizable for your build
 environment and Azure target environments.
 
-You can also use Visual Studio Team Services, a version of TFS that is hosted in Azure, to do this more easily. For more information, see [Continuous Delivery to Azure by Using Visual Studio Team Services][].
+You can also use Visual Studio Team Services, a version of TFS that is hosted in Azure, to do this more easily. For more information, see [Continuous Delivery to Azure by Using Visual Studio Team Services][] .
 
 Before you start, you should publish your application from Visual Studio.
 This will ensure that all the resources are available and initialized when you
@@ -97,7 +97,7 @@ information about command-line parameters and MSBuild, see [MSBuild Command Line
     Optionally, you can specify the project name as an MSBuild
     parameter. If not specified, the current directory is used. For more
     information about MSBuild command line options, see [MSBuild Command
-    Line Reference][1].
+    Line Reference](https://msdn.microsoft.com/library/ms164311%28v=vs.140%29.aspx).
 
 4.  Locate the output. By default, this command creates a directory in
     relation to the root folder for the project, such as
@@ -156,7 +156,7 @@ steps:
     Team Explorer window, expand the **Builds** node or choose the **Builds**
     page, and choose **New Build Definition**.
 
-    ![][0]
+    ![New Build Definition option][0]
 
 2.  Choose the **Trigger** tab, and specify the desired conditions for
     when you want the package to be built. For example, specify
@@ -181,7 +181,7 @@ steps:
     package and copy the package files to the location
     \\\\myserver\\drops\\:
 
-    ![][2]
+    ![MSBuild arguments][2]
 
     **Note:** Copying the files to a public share makes it easier to
     manually deploy the packages from your development computer.
@@ -239,14 +239,14 @@ Template workflow activities in Visual Studio TFS Team Build.
     deployment is being created.
 
     -   To create a new cloud service, you can call this script or use
-        the Azure management portal. The cloud service name
+        the [Azure classic portal](http://go.microsoft.com/fwlink/?LinkID=213885). The cloud service name
         will be used as a prefix in a fully qualified domain name and
         hence it must be unique.
 
             New-AzureService -ServiceName "mytestcloudservice" -Location "North Central US" -Label "mytestcloudservice"
 
     -   To create a new storage account, you can call this script or use
-        the Azure management portal. The storage account name
+        the [Azure classic portal](http://go.microsoft.com/fwlink/?LinkID=213885). The storage account name
         will be used as a prefix in a fully qualified domain name and
         hence it must be unique. You can try using the same name as the
         cloud service.
@@ -268,8 +268,8 @@ Template workflow activities in Visual Studio TFS Team Build.
         PowerShell c:\scripts\windowsazure\PublishCloudService.ps1 -environment Staging -serviceName mycloudservice -storageAccountName mystoragesaccount -packageLocation c:\drops\app.publish\ContactManager.Azure.cspkg -cloudConfigLocation c:\drops\app.publish\ServiceConfiguration.Cloud.cscfg -subscriptionDataFile c:\scripts\default.publishsettings
 
     This is typically followed up by test run verification and a VIP
-    swap. The VIP swap can be done via the Azure Management
-    Portal or by using the Move-Deployment cmdlet.
+    swap. The VIP swap can be done via the [Azure classic portal](http://go.microsoft.com/fwlink/?LinkID=213885) or
+    by using the Move-Deployment cmdlet.
 
     **Example scenario 2:** continuous deployment to the production
     environment of a dedicated test service
@@ -304,9 +304,10 @@ Template workflow activities in Visual Studio TFS Team Build.
 
     Alternatively you can export the certificate file PFX with private
     key and upload certificates to each target cloud service using the
-    Azure Management Portal. Read the following article to learn
-    more:
-    [http://msdn.microsoft.com/library/windowsazure/gg443832.aspx][].
+    [Azure classic portal](http://go.microsoft.com/fwlink/?LinkID=213885).
+    <!---
+    Fixing broken links for Azure content migration from ACOM to DOCS. I'm unable to find a replacement links, so I'm commenting out this reference for now. The author can investigate in the future. "Read the following article to learn more: http://msdn.microsoft.com/library/windowsazure/gg443832.aspx.
+    -->
 
     **Upgrade Deployment vs. Delete Deployment -\> New Deployment**
 
@@ -371,7 +372,7 @@ piped into the standard build output.
         PublishScriptLocation
         ServiceName
 
-    ![][3]
+    ![List of arguments][3]
 
     The corresponding XAML looks like this:
 
@@ -430,7 +431,7 @@ piped into the standard build output.
 
         -   PublishScriptFilePath, of type String
 
-            ![][4]
+            ![New variables][4]
 
     4.  If you are using TFS 2012 or earlier, add a ConvertWorkspaceItem activity at the beginning of the new
         Sequence. If you are using TFS 2013 or later, add a GetLocalPath activity at the beginning of the new sequence. For a ConvertWorkspaceItem, set the properties as follows: Direction=ServerToLocal, DisplayName='Convert publish
@@ -488,7 +489,7 @@ piped into the standard build output.
     The final result of the publish workflow activities will look like
     this in the designer:
 
-    ![][5]
+    ![Workflow activities][5]
 
     The final result of the publish workflow activities will look like
     this in XAML:
@@ -555,7 +556,7 @@ piped into the standard build output.
 
     8.  SubscriptionName = 'default'
 
-    ![][6]
+    ![Parameter property values][6]
 
 10. Save the changes to the Build Definition.
 
@@ -778,7 +779,7 @@ To enable remote debugging when using continuous delivery, see [Enable remote de
   [.NET Framework 4.5.2]: https://www.microsoft.com/download/details.aspx?id=42643
   [Scale out your build system]: https://msdn.microsoft.com/library/dd793166.aspx
   [Deploy and configure a build server]: https://msdn.microsoft.com/library/ms181712.aspx
-  [Azure PowerShell cmdlets]: powershell-install-configure.md
+  [Azure PowerShell cmdlets]: ../powershell-install-configure.md
   [the .publishsettings file]: https://manage.windowsazure.com/download/publishprofile.aspx?wa=wsignin1.0
   [0]: ./media/cloud-services-dotnet-continuous-delivery/tfs-01bc.png
   [2]: ./media/cloud-services-dotnet-continuous-delivery/tfs-02.png

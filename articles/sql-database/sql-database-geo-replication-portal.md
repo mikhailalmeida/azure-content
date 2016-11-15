@@ -1,10 +1,10 @@
-<properties 
-    pageTitle="Configure geo-replication for Azure SQL Database with the Azure portal | Microsoft Azure" 
-    description="Configure geo-replication for Azure SQL Database using the Azure portal" 
-    services="sql-database" 
-    documentationCenter="" 
-    authors="stevestein" 
-    manager="jhubbard" 
+<properties
+    pageTitle="Configure geo-replication for Azure SQL Database with the Azure portal | Microsoft Azure"
+    description="Configure geo-replication for Azure SQL Database by using the Azure portal"
+    services="sql-database"
+    documentationCenter=""
+    authors="stevestein"
+    manager="jhubbard"
     editor=""/>
 
 <tags
@@ -12,143 +12,79 @@
     ms.devlang="NA"
     ms.topic="article"
     ms.tgt_pltfrm="NA"
-    ms.workload="data-management" 
-    ms.date="02/23/2016"
+    ms.workload="NA"
+    ms.date="10/18/2016"
     ms.author="sstein"/>
 
 # Configure geo-replication for Azure SQL Database with the Azure portal
 
 
 > [AZURE.SELECTOR]
+- [Overview](sql-database-geo-replication-overview.md)
 - [Azure portal](sql-database-geo-replication-portal.md)
 - [PowerShell](sql-database-geo-replication-powershell.md)
-- [Transact-SQL](sql-database-geo-replication-transact-sql.md)
+- [T-SQL](sql-database-geo-replication-transact-sql.md)
 
+This article shows you how to configure active geo-replication for SQL Database with the [Azure portal](http://portal.azure.com).
 
-This article shows you how to configure geo-replication for SQL Database with the [Azure portal](http://portal.azure.com).
+To initiate failover with the Azure portal, see [Initiate a planned or unplanned failover for Azure SQL Database with the Azure portal](sql-database-geo-replication-failover-portal.md).
 
-Geo-replication enables creating up to 4 replica (secondary) databases in different data center locations (regions). Secondary databases are available in the case of a data center outage or the inability to connect to the primary database.
+>[AZURE.NOTE] Active geo-replication (readable secondaries) is now available for all databases in all service tiers. In April 2017, the non-readable secondary type will be retired, and existing non-readable databases will automatically be upgraded to readable secondaries.
 
-Geo-replication is only available for Standard and Premium databases. 
+To configure geo-replication by using the Azure portal, you need the following resource:
 
-Standard databases can have one non-readable secondary and must use the recommended region. Premium databases can have up to four readable secondaries in any of the available regions.
+- An Azure SQL database: The primary database that you want to replicate to a different geographical region.
 
-
-To configure geo-replication you need the following:
-
-- An Azure subscription. If you need an Azure subscription simply click **FREE TRIAL** at the top of this page, and then come back to finish this article.
-- An Azure SQL Database database - The primary database that you want to replicate to a different geographical region.
-
-
-
-## Add secondary database
+## Add a secondary database
 
 The following steps create a new secondary database in a geo-replication partnership.  
 
-To add a secondary you must be the subscription owner or co-owner. 
+To add a secondary database, you must be the subscription owner or co-owner.
 
-The secondary database will have the same name as the primary database and will, by default, have the same service level. The secondary database can be readable (Premium tier only) or non-readable, and can be a single database or an elastic database. For more information, see [Service Tiers](sql-database-service-tiers.md).
-After the secondary is created and seeded, data will begin replicating from the primary database to the new secondary database. 
+The secondary database has the same name as the primary database and has, by default, the same service level. The secondary database can be a single database or an elastic database. For more information, see [Service tiers](sql-database-service-tiers.md).
+After the secondary is created and seeded, data begins replicating from the primary database to the new secondary database.
 
-> [AZURE.NOTE] If the partner database already exists (for example - as a result of terminating a previous geo-replication relationship) the command will fail.
-
-
-
+> [AZURE.NOTE] If the partner database already exists (for example, as a result of terminating a previous geo-replication relationship) the command fails.
 
 ### Add secondary
 
-1. In the [Azure portal](http://portal.azure.com) browse to the database that you want to setup for geo-replication.
-2. On the SQL Database blade, select **All settings** > **Geo-Replication**.
-3. Select the region to create the secondary database. Premium databases can use any region for a secondary, Standard databases must use the recommended region:
+1. In the [Azure portal](http://portal.azure.com), browse to the database that you want to set up for geo-replication.
+2. On the SQL database page, select **Geo-Replication**, and then select the region to create the secondary database. You can select any region other than the region hosting the primary database, but we recommend the [paired region](../best-practices-availability-paired-regions.md).
 
+    ![Configure geo-replication](./media/sql-database-geo-replication-portal/configure-geo-replication.png)
 
-    ![Add secondary][1]
+3. Select or configure the server and pricing tier for the secondary database.
 
+    ![Configure secondary](./media/sql-database-geo-replication-portal/create-secondary.png)
 
-4. Configure the **Secondary type** (**Readable**, or **Non-readable**), Only Premium databases can have readable secondaries, Standard database secondaries can only be set to **Non-readable**.
-5. Select or configure the server for the secondary database.
+4. Optionally, you can add a secondary database to an elastic database pool. To create the secondary database in a pool, click **Elastic database pool** and select a pool on the target server. A pool must already exist on the target server. This workflow does not create a pool.
 
-    ![Create Secondary][3]
+5. Click **Create** to add the secondary.
 
-5. Optionally, you can add a secondary database to an elastic database pool:
+6. The secondary database is created and the seeding process begins.
 
-       - Click **Elastic database pool** and select a pool on the target server to create the secondary database in. A pool must already exist on the target server as this workflow does not create a new pool.
+    ![Configure secondary](./media/sql-database-geo-replication-portal/seeding0.png)
 
-6. Click **Create** to add the secondary.
- 
-6. The secondary database is created and the seeding process begins. 
- 
-    ![seeding][6]
+7. When the seeding process is complete, the secondary database displays its status.
 
-7. When the seeding process is complete the secondary database displays its status (non-readable.
-
-    ![secondary ready][9]
-
+    ![Seeding complete](./media/sql-database-geo-replication-portal/seeding-complete.png)
 
 
 ## Remove secondary database
 
-The operation permanently terminates the replication to the secondary database and change the role of the secondary to a regular read-write database. If the connectivity to the secondary database is broken the command succeeds but the secondary will not become read-write until after connectivity is restored.  
+This operation permanently terminates the replication to the secondary database, and changes the role of the secondary to a regular read-write database. If the connectivity to the secondary database is broken, the command succeeds but the secondary does not become read-write until after connectivity is restored.  
 
-1. In the [Azure portal](http://portal.azure.com) browse to the primary database in the geo-replication partnership.
-2. On the SQL Database blade, select **All settings** > **Geo-Replication**.
-3. In the **SECONDARIES** list select the database you want to remove from the geo-replication partnership.
+1. In the [Azure portal](http://portal.azure.com), browse to the primary database in the geo-replication partnership.
+2. On the SQL database page, select **Geo-Replication**.
+3. In the **SECONDARIES** list, select the database you want to remove from the geo-replication partnership.
 4. Click **Stop Replication**.
 
-    ![remove secondary][7]
+    ![Remove secondary](./media/sql-database-geo-replication-portal/remove-secondary.png)
 
+5. A confirmation window opens. Click **Yes** to remove the database from the geo-replication partnership. (Set it to a read-write database not part of any replication.)
 
-5. Clicking **Stop Replication** opens a confirmation window so click **Yes** to remove the database from the geo-replication partnership (set it to a read-write database not part of any replication).
-
-
-    ![confirm removal][8]
-
-
-
-## Initiate a failover
-
-The secondary database can be switched to become the primary.  
-
-1. In the [Azure portal](http://portal.azure.com) browse to the primary database in the geo-replication partnership.
-2. On the SQL Database blade, select **All settings** > **Geo-Replication**.
-3. In the **SECONDARIES** list, select the database you want to become the new primary.
-4. Click **Failover**.
-
-    ![failover][10]
-
-The command performs the following workflow: 
-
-1. Temporarily switch replication to synchronous mode. This will cause all outstanding transactions to be flushed to the secondary. 
-
-2. Switch the primary and secondary roles of the two databases in the geo-replication partnership.  
-
-For planned failover, this sequence guarantees that no data loss will occur. There is a short period during which both databases are unavailable (on the order of 0 to 25 seconds) while the roles are switched. The entire operation should take less than a minute to complete under normal circumstances. 
-
-   
 
 ## Next steps
 
-- [Designing cloud applications for business continuity using geo-replication](sql-database-designing-cloud-solutions-for-disaster-recovery.md)
-- [Disaster Recovery Drills](sql-database-disaster-recovery-drills.md)
-
-
-## Additional resources
-
-- [Spotlight on new geo-replication capabilities](https://azure.microsoft.com/blog/spotlight-on-new-capabilities-of-azure-sql-database-geo-replication/)
-- [Designing cloud applications for business continuity using geo-replication](sql-database-designing-cloud-solutions-for-disaster-recovery.md)
-- [Business Continuity Overview](sql-database-business-continuity.md)
-- [SQL Database documentation](https://azure.microsoft.com/documentation/services/sql-database/)
-
-
-<!--Image references-->
-[1]: ./media/sql-database-geo-replication-portal/configure-geo-replication.png
-[2]: ./media/sql-database-geo-replication-portal/add-secondary.png
-[3]: ./media/sql-database-geo-replication-portal/create-secondary.png
-[4]: ./media/sql-database-geo-replication-portal/secondary-type.png
-[5]: ./media/sql-database-geo-replication-portal/create.png
-[6]: ./media/sql-database-geo-replication-portal/seeding0.png
-[7]: ./media/sql-database-geo-replication-portal/remove-secondary.png
-[8]: ./media/sql-database-geo-replication-portal/stop-confirm.png
-[9]: ./media/sql-database-geo-replication-portal/seeding-complete.png
-[10]: ./media/sql-database-geo-replication-portal/failover.png
-
+- To learn more about active geo-replication, see [Active Geo-Replication](sql-database-geo-replication-overview.md).
+- For a business continuity overview and scenarios, see [Business continuity overview](sql-database-business-continuity.md).

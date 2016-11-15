@@ -1,5 +1,5 @@
 <properties
-	pageTitle="Troubleshoot application access on a VM | Microsoft Azure"
+	pageTitle="Troubleshoot application access on a Windows VM | Microsoft Azure"
 	description="If you can't access an application running on an Azure virtual machine, use these steps to isolate the source of the problem."
 	services="virtual-machines-windows"
 	documentationCenter=""
@@ -14,11 +14,9 @@
 	ms.tgt_pltfrm="vm-windows"
 	ms.devlang="na"
 	ms.topic="support-article"
-	ms.date="04/21/2016"
+	ms.date="09/27/2016"
 	ms.author="iainfou"/>
 
 # Troubleshoot access to an application running on an Azure virtual machine
-
-[AZURE.INCLUDE [learn-about-deployment-models](../../includes/learn-about-deployment-models-both-include.md)]
 
 [AZURE.INCLUDE [virtual-machines-common-troubleshoot-app-connection](../../includes/virtual-machines-common-troubleshoot-app-connection.md)]

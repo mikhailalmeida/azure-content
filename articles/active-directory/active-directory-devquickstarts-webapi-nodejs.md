@@ -13,7 +13,7 @@
 	ms.tgt_pltfrm="na"
 	ms.devlang="javascript"
 	ms.topic="article"
-	ms.date="01/23/2016"
+	ms.date="09/16/2016"
 	ms.author="brandwe"/>
 
 # Getting Started With WEB-API for Node
@@ -28,9 +28,9 @@ In order to do this, you’ll need to:
 2. Set up your app to use Passport's azure-ad-passport plug-in.
 3. Configure a client application to call the To Do List Web API
 
-The code for this tutorial is maintained [on GitHub](https://github.com/Azure-Samples/active-directory-node-webapi). 
+The code for this tutorial is maintained [on GitHub](https://github.com/Azure-Samples/active-directory-node-webapi).
 
-> [AZURE.NOTE] This article does not cover how to implement sign-in, sign-up and profile management with Azure AD B2C.  It focuses on calling web APIs after the user is already authenticated.  If you haven't already, you should start with the [How to integrate with Azure Active Directory document](active-directory-how-to-integrate.md) to learn about the basics of Azure Active Directory.
+> [AZURE.NOTE] This article does not cover how to implement sign-in, sign-up and profile management with Azure AD B2C.  It focuses on calling web APIs after the user is already authenticated.  If you haven't already, you should start with the [How to integrate with Azure Active Directory document](./develop/active-directory-how-to-integrate.md) to learn about the basics of Azure Active Directory.
 
 
 We've released all of the source code for this running example in GitHub under an MIT license, so feel free to clone (or even better, fork!) and provide feedback and pull requests.
@@ -181,19 +181,20 @@ Type the following command to install Passport.js passport-azure-ad module:
 
 The output of the command should appear similar to the following:
 
-``
-passport-azure-ad@1.0.0 node_modules/passport-azure-ad
-├── xtend@4.0.0
-├── xmldom@0.1.19
-├── passport-http-bearer@1.0.1 (passport-strategy@1.0.0)
-├── underscore@1.8.3
-├── async@1.3.0
-├── jsonwebtoken@5.0.2
-├── xml-crypto@0.5.27 (xpath.js@1.0.6)
-├── ursa@0.8.5 (bindings@1.2.1, nan@1.8.4)
-├── jws@3.0.0 (jwa@1.0.1, base64url@1.0.4)
-├── request@2.58.0 (caseless@0.10.0, aws-sign2@0.5.0, forever-agent@0.6.1, stringstream@0.0.4, tunnel-agent@0.4.1, oauth-sign@0.8.0, isstream@0.1.2, extend@2.0.1, json-stringify-safe@5.0.1, node-uuid@1.4.3, qs@3.1.0, combined-stream@1.0.5, mime-types@2.0.14, form-data@1.0.0-rc1, http-signature@0.11.0, bl@0.9.4, tough-cookie@2.0.0, hawk@2.3.1, har-validator@1.8.0)
-└── xml2js@0.4.9 (sax@0.6.1, xmlbuilder@2.6.4)
+	``
+	passport-azure-ad@1.0.0 node_modules/passport-azure-ad
+	├── xtend@4.0.0
+	├── xmldom@0.1.19
+	├── passport-http-bearer@1.0.1 (passport-strategy@1.0.0)
+	├── underscore@1.8.3
+	├── async@1.3.0
+	├── jsonwebtoken@5.0.2
+	├── xml-crypto@0.5.27 (xpath.js@1.0.6)
+	├── ursa@0.8.5 (bindings@1.2.1, nan@1.8.4)
+	├── jws@3.0.0 (jwa@1.0.1, base64url@1.0.4)
+	├── request@2.58.0 (caseless@0.10.0, aws-sign2@0.5.0, forever-agent@0.6.1, stringstream@0.0.4, tunnel-agent@0.4.1, oauth-sign@0.8.0, isstream@0.1.2, extend@2.0.1, json-stringify-safe@5.0.1, node-uuid@1.4.3, qs@3.1.0, combined-stream@1.0.5, mime-types@2.0.14, form-data@1.0.0-rc1, http-signature@0.11.0, bl@0.9.4, tough-cookie@2.0.0, hawk@2.3.1, har-validator@1.8.0)
+	└── xml2js@0.4.9 (sax@0.6.1, xmlbuilder@2.6.4)
+
 
 
 ## 8. Add MongoDB modules to your Web API
@@ -245,7 +246,8 @@ Create a `server.js` file in our favorite editor and add the following informati
 	var getopt = require('posix-getopt');
 	var mongoose = require('mongoose/');
 	var restify = require('restify');
-  var OIDCBearerStrategy = require('passport-azure-ad').BearerStrategy;
+	var passport = require('passport');
+  var BearerStrategy = require('passport-azure-ad').BearerStrategy;
 ```
 
 Save the file. We will return to it shortly.
@@ -268,7 +270,7 @@ Create a `config.js` file in our favorite editor and add the following informati
      audience: 'your application URL',
     // you cannot have users from multiple tenants sign in to your server unless you use the common endpoint
   // example: https://login.microsoftonline.com/common/.well-known/openid-configuration
-     identityMetadata: 'https://login.microsoftonline.com/<your client id>/.well-known/openid-configuration', 
+     identityMetadata: 'https://login.microsoftonline.com/<your tenant id>/.well-known/openid-configuration',
      validateIssuer: true, // if you have validation on, you cannot have users from multiple tenants sign in to your server
      passReqToCallback: false,
      loggingLevel: 'info' // valid are 'info', 'warn', 'error'. Error always goes to stderr in Unix.
@@ -277,7 +279,7 @@ Create a `config.js` file in our favorite editor and add the following informati
 
 
 ```
-Save the file. 
+Save the file.
 
 ## 12. Add configuration to your server.js file
 
@@ -318,7 +320,7 @@ var log = bunyan.createLogger({
             stream: process.stderr,
             level: "error",
             name: "error"
-        }, 
+        },
         {
             stream: process.stdout,
             level: "warn",
@@ -335,7 +337,7 @@ var serverPort = process.env.PORT || 8080;
 var serverURI = (process.env.PORT) ? config.creds.mongoose_auth_mongohq : config.creds.mongoose_auth_local;
 ```
 
-Save the file. 
+Save the file.
 
 
 

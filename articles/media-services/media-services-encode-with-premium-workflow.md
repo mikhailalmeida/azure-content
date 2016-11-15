@@ -1,5 +1,5 @@
 <properties 
-	pageTitle="Advanced encoding with Media Encoder Premium Workflow" 
+	pageTitle="Advanced encoding with Media Encoder Premium Workflow | Microsoft Azure" 
 	description="Learn how to encode with Media Encoder Premium Workflow. Code samples are written in C# and use the Media Services SDK for .NET." 
 	services="media-services" 
 	documentationCenter="" 
@@ -13,14 +13,14 @@
 	ms.tgt_pltfrm="na" 
 	ms.devlang="na" 
 	ms.topic="article" 
-	ms.date="02/25/2016" 
+	ms.date="09/26/2016" 
 	ms.author="juliako"/>
 
 #Advanced encoding with Media Encoder Premium Workflow
 
->[AZURE.NOTE]- For premium encoder questions, email mepd at Microsoft.com.
->
->- Media Encoder Premium Workflow media processor discussed in this topic is not available in China.
+>[AZURE.NOTE] Media Encoder Premium Workflow media processor discussed in this topic is not available in China.
+
+For premium encoder questions, email mepd at Microsoft.com.
 
 ##Overview
 
@@ -269,6 +269,7 @@ The following is a complete example. For information on how to set up with Media
 	}
 
 
+For premium encoder questions, email mepd at Microsoft.com.
 
 ##Media Services learning paths
 

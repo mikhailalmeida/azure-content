@@ -12,7 +12,7 @@
       ms.tgt_pltfrm="na"
       ms.devlang="na"
       ms.topic="article"
-      ms.date="02/29/2016"
+      ms.date="10/18/2016"
       ms.author="minet" />
 
 
@@ -40,10 +40,11 @@ Here's a video that demonstrates how to create and use Azure File shares on Linu
 
 When creating a Linux virtual machine in Azure, you can specify a Linux image which supports SMB 2.1 or higher from the Azure image gallery. Below is a list of recommended Linux images:
 
-- Ubuntu Server 14.04
-- Ubuntu Server 15.04
-- CentOS 7.1
-- Open SUSE 13.2
+- Ubuntu Server 14.04+
+- RHEL 7+
+- CentOS 7+
+- Debian 8
+- openSUSE 13.2+
 - SUSE Linux Enterprise Server 12
 - SUSE Linux Enterprise Server 12 (Premium Image)
 
@@ -63,7 +64,7 @@ Note that 0777 here represent a directory/file permission code that gives execut
 
 Also to keep a file share mounted after reboot, you can add a setting like below in your /etc/fstab:
 
-    //myaccountname.file.core.windows.net/mysharename /mymountpoint cifs vers=3.0,username= myaccountname,password= StorageAccountKeyEndingIn==,dir_mode=0777,file_mode=0777
+    //myaccountname.file.core.windows.net/mysharename /mymountpoint cifs vers=3.0,username=myaccountname,password=StorageAccountKeyEndingIn==,dir_mode=0777,file_mode=0777
 
 For example, if you created a Azure VM using Linux image Ubuntu Server 15.04 (which is available from the Azure image gallery), you can mount the file as below:
 
@@ -131,6 +132,7 @@ See these links for more information about Azure File storage.
 ### Reference
 
 - [File Service REST API reference](http://msdn.microsoft.com/library/azure/dn167006.aspx)
+- [Azure Files Troubleshooting Article](storage-troubleshoot-file-connection-problems.md)
 
 ### Blog posts
 

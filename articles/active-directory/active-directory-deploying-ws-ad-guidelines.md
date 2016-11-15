@@ -13,7 +13,7 @@
    ms.topic="article"
    ms.tgt_pltfrm="na"
    ms.workload="identity"
-   ms.date="03/04/2016"
+   ms.date="09/27/2016"
    ms.author="femila"/>
 
 # Guidelines for deploying Windows Server Active Directory on Azure virtual machines
@@ -53,7 +53,7 @@ We recommend that you also first review the tutorials, guides, and videos that c
 - [Configure a Cloud-Only Virtual Network in the Azure Portal](../virtual-network/virtual-networks-create-vnet-arm-pportal.md)
 - [Configure a Site-to-Site VPN in the Azure Portal](../vpn-gateway/vpn-gateway-site-to-site-create.md)
 - [Install a new Active Directory forest on an Azure virtual network](active-directory-new-forest-virtual-machine.md)
-- [Install a replica Active Directory domain controller on Azure](../virtual-network/virtual-networks-install-replica-active-directory-domain-controller.md)
+- [Install a replica Active Directory domain controller on Azure](../active-directory/active-directory-install-replica-active-directory-domain-controller.md)
 - [Microsoft Azure IT Pro IaaS: (01) Virtual Machine Fundamentals](https://channel9.msdn.com/Series/Windows-Azure-IT-Pro-IaaS/01)
 - [Microsoft Azure IT Pro IaaS: (05) Creating Virtual Networks and Cross-Premises Connectivity](https://channel9.msdn.com/Series/Windows-Azure-IT-Pro-IaaS/05)
 
@@ -176,7 +176,7 @@ However, because Azure does not provide native, full-featured firewall capabilit
 
 The high-level steps to deploy AD FS in this case are as follows:
 
-1. Create a [virtual network with cross-premises connectivity](../vpn-gateway/vpn-gateway-cross-premises-options.md), using either a VPN or [ExpressRoute](http://azure.microsoft.com/services/expressroute/).
+1. Create a virtual network with cross-premises connectivity, using either a VPN or [ExpressRoute](http://azure.microsoft.com/services/expressroute/).
 
 2. Deploy domain controllers on the virtual network. This step is optional but recommended.
 
@@ -341,7 +341,7 @@ An LDAP-aware application is deployed on an Azure virtual machine. It supports W
 
 - [Network topology](#BKMK_NetworkTopology): Create an Azure virtual network with [cross-premises connectivity](../vpn-gateway/vpn-gateway-site-to-site-create.md).
 
-- [Installation method](#BKMK_InstallMethod): Deploy replica DCs from the corporate Windows Server Active Directory domain. For a replica DC, you can install Windows Server AD DS on the VM, and optionally use the Install From Media (IFM) feature to reduce the amount of data that needs to be replicated to the new DC during installation. For a tutorial, see [Install a replica Active Directory domain controller on Azure](../virtual-network/virtual-networks-install-replica-active-directory-domain-controller.md). Even if you use IFM, it may be more efficient to build the virtual DC on-premises and move the entire Virtual Hard Disk (VHD) to the cloud instead of replicating Windows Server AD DS during installation. For safety, it is recommended that you delete the VHD from the on-premises network once it has been copied to Azure.
+- [Installation method](#BKMK_InstallMethod): Deploy replica DCs from the corporate Windows Server Active Directory domain. For a replica DC, you can install Windows Server AD DS on the VM, and optionally use the Install From Media (IFM) feature to reduce the amount of data that needs to be replicated to the new DC during installation. For a tutorial, see [Install a replica Active Directory domain controller on Azure](../active-directory/active-directory-install-replica-active-directory-domain-controller.md). Even if you use IFM, it may be more efficient to build the virtual DC on-premises and move the entire Virtual Hard Disk (VHD) to the cloud instead of replicating Windows Server AD DS during installation. For safety, it is recommended that you delete the VHD from the on-premises network once it has been copied to Azure.
 
 - [Windows Server Active Directory site topology](#BKMK_ADSiteTopology): Create a new Azure site in Active Directory Sites and Services. Create a Windows Server Active Directory subnet object to represent the Azure virtual network and add the subnet to the site. Create a new site link that includes the new Azure site and the site in which the Azure virtual network VPN endpoint is located in order to control and optimize Windows Server Active Directory traffic to and from Azure.
 

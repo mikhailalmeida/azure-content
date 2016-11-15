@@ -15,109 +15,118 @@
     ms.tgt_pltfrm="vm-linux"
     ms.devlang="na"
     ms.topic="article"
-    ms.date="04/22/2016"
+    ms.date="10/25/2016"
     ms.author="v-livech"
 />
 
 # Manage users, SSH, and check or repair disks on Azure Linux VMs using the VMAccess Extension
 
-Use the [VMAcesss VM extension (Github Repo)](https://github.com/Azure/azure-linux-extensions/tree/master/VMAccess) to check or repair the disk, reset user access, manage user accounts, or reset the SSHD configuration on Linux.
+This article shows you how to use the Azure VMAcesss Extension to check or repair a disk, reset user access, manage user accounts, or reset the SSHD configuration on Linux. The article requires:
 
-Prerequisites are: [an Azure account](https://azure.microsoft.com/pricing/free-trial/), [SSH public and private keys](virtual-machines-linux-mac-create-ssh-keys.md), an Azure resource group, and the Azure CLI installed and switched to ARM mode using `azure config mode arm`.
+- an Azure account ([get a free trial](https://azure.microsoft.com/pricing/free-trial/)).
 
-## Quick Commands
+- the [Azure CLI](../xplat-cli-install.md) logged in with `azure login`.
 
-```
-# To check and then repair the disk for Linux use this VMAccess script-
+- the Azure CLI _must be in_ Azure Resource Manager mode `azure config mode arm`.
 
-disk_check_repair.json
+## Quick commands
 
-{
-  "check_disk": "true",
-  "repair_disk": "true, user-disk-name"
-}
+There are two ways to use VMAccess on your Linux VMs:
 
-bill@slackware$ azure vm extension set exampleResourceGruop exampleVM \
-VMAccessForLinux Microsoft.OSTCExtensions * \
---private-config-path disk_check_repair.json
+- Using the Azure CLI and the required parameters.
+- Using raw JSON files that VMAccess processes and then act on.
 
-# To reset the root password use this VMAccess script -
+For the quick command section, we are going to use the Azure CLI `azure vm reset-access` method. In the following command examples, replace the values that contain "example" with the values from your own environment.
 
-reset_root_password.json
+## Create a Resource Group and Linux VM
 
-{
-  "username":"root",
-  "password":"exampleNewPassword",   
-}
-
-bill@slackware$ azure vm extension set exampleResourceGruop exampleVM \
-VMAccessForLinux Microsoft.OSTCExtensions * \
---private-config-path reset_root_password.json
-
-# To reset the SSH key of a non root user use this VMAccess script -
-
-reset_ssh_key.json
-
-{
-  "username":"exampleUser",
-  "ssh_key":"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCZ3S7gGp3rcbKmG2Y4vGZFMuMZCwoUzZNG1vHY7P2XV2x9FfAhy8iGD+lF8UdjFX3t5ebMm6BnnMh8fHwkTRdOt3LDQq8o8ElTBrZaKPxZN2thMZnODs5Hlemb2UX0oRIGRcvWqsd4oJmxsXa/Si98Wa6RHWbc9QZhw80KAcOVhmndZAZAGR+Wq6yslNo5TMOr1/ZyQAook5C4FtcSGn3Y+WczaoGWIxG4ZaWk128g79VIeJcIQqOjPodHvQAhll7qDlItVvBfMOben3GyhYTm7k4YwlEdkONm4yV/UIW0la1rmyztSBQIm9sZmSq44XXgjVmDHNF8UfCZ1ToE4r2SdwTmZv00T2i5faeYnHzxiLPA3Enub7iUo5IdwFArnqad7MO1SY1kLemhX9eFjLWN4mJe56Fu4NiWJkR9APSZQrYeKaqru4KUC68QpVasNJHbuxPSf/PcjF3cjO1+X+4x6L1H5HTPuqUkyZGgDO4ynUHbko4dhlanALcriF7tIfQR9i2r2xOyv5gxJEW/zztGqWma/d4rBoPjnf6tO7rLFHXMt/DVTkAfn5woYtLDwkn5FMyvThRmex3BDf0gujoI1y6cOWLe9Y5geNX0oj+MXg/W0cXAtzSFocstV1PoVqy883hNoeQZ3mIGB3Q0rIUm5d9MA2bMMt31m1g3Sin6EQ== exampleUser@exampleServer",   
-}
-
-bill@slackware$ azure vm extension set exampleResourceGruop exampleVM \
-VMAccessForLinux Microsoft.OSTCExtensions * \
---private-config-path reset_ssh_key.json
-
-# To create a new user use this VMAccess script -
-
-create_new_user.json
-
-{
-"username":"exampleNewUserName",
-"ssh_key":"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCZ3S7gGp3rcbKmG2Y4vGZFMuMZCwoUzZNG1vHY7P2XV2x9FfAhy8iGD+lF8UdjFX3t5ebMm6BnnMh8fHwkTRdOt3LDQq8o8ElTBrZaKPxZN2thMZnODs5Hlemb2UX0oRIGRcvWqsd4oJmxsXa/Si98Wa6RHWbc9QZhw80KAcOVhmndZAZAGR+Wq6yslNo5TMOr1/ZyQAook5C4FtcSGn3Y+WczaoGWIxG4ZaWk128g79VIeJcIQqOjPodHvQAhll7qDlItVvBfMOben3GyhYTm7k4YwlEdkONm4yV/UIW0la1rmyztSBQIm9sZmSq44XXgjVmDHNF8UfCZ1ToE4r2SdwTmZv00T2i5faeYnHzxiLPA3Enub7iUo5IdwFArnqad7MO1SY1kLemhX9eFjLWN4mJe56Fu4NiWJkR9APSZQrYeKaqru4KUC68QpVasNJHbuxPSf/PcjF3cjO1+X+4x6L1H5HTPuqUkyZGgDO4ynUHbko4dhlanALcriF7tIfQR9i2r2xOyv5gxJEW/zztGqWma/d4rBoPjnf6tO7rLFHXMt/DVTkAfn5woYtLDwkn5FMyvThRmex3BDf0gujoI1y6cOWLe9Y5geNX0oj+MXg/W0cXAtzSFocstV1PoVqy883hNoeQZ3mIGB3Q0rIUm5d9MA2bMMt31m1g3Sin6EQ== exampleUser@exampleServer",
-"password":"examplePassword",
-}
-
-bill@slackware$ azure vm extension set exampleResourceGruop exampleVM \
-VMAccessForLinux Microsoft.OSTCExtensions * \
---private-config-path create_new_user.json
-
-# To remove a user use this VMAccess script -
-
-remove_user.json
-
-{
-"remove_user":"exampleUser",
-}
-
-bill@slackware$ azure vm extension set exampleResourceGruop exampleVM \
-VMAccessForLinux Microsoft.OSTCExtensions * \
---private-config-path remove_user.json
-
-# To reset the SSHD configuration use this VMAccess script -
-
-reset_sshd.json
-
-{
-  "reset_ssh": true
-}
-
-bill@slackware$ azure vm extension set exampleResourceGruop exampleVM \
-VMAccessForLinux Microsoft.OSTCExtensions * \
---private-config-path reset_sshd.json
+```bash
+azure group create myResourceGroup westus
 ```
 
+## Create a Debian VM
 
-## Detailed Walk Through
+```bash
+azure vm quick-create \
+-M ~/.ssh/id_rsa.pub \
+-u myAdminUser \
+-g myResourceGroup \
+-l westus \
+-y Linux \
+-n myVM \
+-Q Debian
+```
+
+## Reset root password
+
+To reset the root password:
+
+```bash
+azure vm reset-access \
+-g myResourceGroup \
+-n myVM \
+-u root \
+-p myNewPassword
+```
+
+## SSH key reset
+
+To reset the SSH key of a non-root user:
+
+```bash
+azure vm reset-access \
+-g myResourceGroup \
+-n myVM \
+-u myAdminUser \
+-M ~/.ssh/id_rsa.pub
+```
+
+## Create a user
+
+To create a user:
+
+```bash
+azure vm reset-access \
+-g myResourceGroup \
+-n myVM \
+-u myAdminUser \
+-p myAdminUserPassword
+```
+
+## Remove a user
+
+```bash
+azure vm reset-access \
+-g myResourceGroup \
+-n myVM \
+-R myRemovedUser
+```
+
+## Reset SSHD
+
+To reset the SSHD configuration:
+
+```bash
+azure vm reset-access \
+-g myResourceGroup \
+-n myVM
+-r
+```
+
+
+## Detailed walkthrough
 
 ### VMAccess defined:
 
-The disk on your Linux VM is showing errors.  You somehow reset the root password for your Linux VM or accidentally deleted your SSH private key.   If that happened back in the datacenter dark ages you would drive there, give your hand print to unlock the door, get into the cage and then crack open the KVM to get at the server console.  Think of the Azure VMAccess Extension as that KVM switch that allows you to access the console to reset access to Linux or perform disk level maintenance.
+The disk on your Linux VM is showing errors. You somehow reset the root password for your Linux VM or accidentally deleted your SSH private key. If that happened back in the days of the datacenter, you would need to drive there and then open the KVM to get at the server console. Think of the Azure VMAccess extension as that KVM switch that allows you to access the console to reset access to Linux or perform disk level maintenance.
 
-VMAccess files are all written as JSON and we will run them from the Azure CLI but they can also be called from Azure Templates.
+For the detailed walkthrough, we are going to use the long form of VMAccess, which uses raw JSON files.  These VMAccess JSON files can also be called from Azure templates.
 
 ### Using VMAccess to check or repair the disk of a Linux VM
 
-#### To check and then repair the disk use this VMAccess script -
+Using VMAccess you can do a fsck run on the disk under your Linux VM.  You can also do a disk check and a disk repair using a VMAccess.
+
+To check, and then repair the disk use this VMAccess script:
 
 `disk_check_repair.json`
 
@@ -128,89 +137,118 @@ VMAccess files are all written as JSON and we will run them from the Azure CLI b
 }
 ```
 
+Execute the VMAccess script with:
+
 ```bash
-bill@slackware$ azure vm extension set exampleResourceGruop exampleVM \
-VMAccessForLinux Microsoft.OSTCExtensions * \
+azure vm extension set \
+myResourceGroup \
+myVM \
+VMAccessForLinux \
+Microsoft.OSTCExtensions * \
 --private-config-path disk_check_repair.json
 ```
 
 ### Using VMAccess to reset user access to Linux
 
-#### To reset the root password use this VMAccess script -
+If you have lost access to root on your Linux VM, you can launch a VMAccess script to reset the root password.
+
+To reset the root password, use this VMAccess script:
 
 `reset_root_password.json`
 
 ```json
 {
   "username":"root",
-  "password":"exampleNewPassword",   
+  "password":"myNewPassword",   
 }
 ```
 
+Execute the VMAccess script with:
+
 ```bash
-bill@slackware$ azure vm extension set exampleResourceGruop exampleVM \
-VMAccessForLinux Microsoft.OSTCExtensions * \
+azure vm extension set \
+myResourceGroup \
+myVM \
+VMAccessForLinux \
+Microsoft.OSTCExtensions * \
 --private-config-path reset_root_password.json
 ```
 
-#### To reset the SSH key of a non root user use this VMAccess script -
+To reset the SSH key of a non-root user, use this VMAccess script:
 
 `reset_ssh_key.json`
 
-```bash
+```json
 {
-  "username":"exampleUser",
-  "ssh_key":"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCZ3S7gGp3rcbKmG2Y4vGZFMuMZCwoUzZNG1vHY7P2XV2x9FfAhy8iGD+lF8UdjFX3t5ebMm6BnnMh8fHwkTRdOt3LDQq8o8ElTBrZaKPxZN2thMZnODs5Hlemb2UX0oRIGRcvWqsd4oJmxsXa/Si98Wa6RHWbc9QZhw80KAcOVhmndZAZAGR+Wq6yslNo5TMOr1/ZyQAook5C4FtcSGn3Y+WczaoGWIxG4ZaWk128g79VIeJcIQqOjPodHvQAhll7qDlItVvBfMOben3GyhYTm7k4YwlEdkONm4yV/UIW0la1rmyztSBQIm9sZmSq44XXgjVmDHNF8UfCZ1ToE4r2SdwTmZv00T2i5faeYnHzxiLPA3Enub7iUo5IdwFArnqad7MO1SY1kLemhX9eFjLWN4mJe56Fu4NiWJkR9APSZQrYeKaqru4KUC68QpVasNJHbuxPSf/PcjF3cjO1+X+4x6L1H5HTPuqUkyZGgDO4ynUHbko4dhlanALcriF7tIfQR9i2r2xOyv5gxJEW/zztGqWma/d4rBoPjnf6tO7rLFHXMt/DVTkAfn5woYtLDwkn5FMyvThRmex3BDf0gujoI1y6cOWLe9Y5geNX0oj+MXg/W0cXAtzSFocstV1PoVqy883hNoeQZ3mIGB3Q0rIUm5d9MA2bMMt31m1g3Sin6EQ== exampleUser@exampleServer",   
+  "username":"myAdminUser",
+  "ssh_key":"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCZ3S7gGp3rcbKmG2Y4vGZFMuMZCwoUzZNG1vHY7P2XV2x9FfAhy8iGD+lF8UdjFX3t5ebMm6BnnMh8fHwkTRdOt3LDQq8o8ElTBrZaKPxZN2thMZnODs5Hlemb2UX0oRIGRcvWqsd4oJmxsXa/Si98Wa6RHWbc9QZhw80KAcOVhmndZAZAGR+Wq6yslNo5TMOr1/ZyQAook5C4FtcSGn3Y+WczaoGWIxG4ZaWk128g79VIeJcIQqOjPodHvQAhll7qDlItVvBfMOben3GyhYTm7k4YwlEdkONm4yV/UIW0la1rmyztSBQIm9sZmSq44XXgjVmDHNF8UfCZ1ToE4r2SdwTmZv00T2i5faeYnHzxiLPA3Enub7iUo5IdwFArnqad7MO1SY1kLemhX9eFjLWN4mJe56Fu4NiWJkR9APSZQrYeKaqru4KUC68QpVasNJHbuxPSf/PcjF3cjO1+X+4x6L1H5HTPuqUkyZGgDO4ynUHbko4dhlanALcriF7tIfQR9i2r2xOyv5gxJEW/zztGqWma/d4rBoPjnf6tO7rLFHXMt/DVTkAfn5woYtLDwkn5FMyvThRmex3BDf0gujoI1y6cOWLe9Y5geNX0oj+MXg/W0cXAtzSFocstV1PoVqy883hNoeQZ3mIGB3Q0rIUm5d9MA2bMMt31m1g3Sin6EQ== myAdminUser@myVM",   
 }
 ```
 
+Execute the VMAccess script with:
+
 ```bash
-bill@slackware$ azure vm extension set exampleResourceGruop exampleVM \
-VMAccessForLinux Microsoft.OSTCExtensions * \
+azure vm extension set \
+myResourceGroup \
+myVM \
+VMAccessForLinux \
+Microsoft.OSTCExtensions * \
 --private-config-path reset_ssh_key.json
 ```
 
 ### Using VMAccess to manage user accounts on Linux
 
-#### To create a new user use this VMAccess script -
+VMAccess is a Python script that can be used to manage users on your Linux VM without logging in and using sudo or the root account.
+
+To create a user, use this VMAccess script:
 
 `create_new_user.json`
 
 ```json
 {
-"username":"exampleNewUserName",
-"ssh_key":"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCZ3S7gGp3rcbKmG2Y4vGZFMuMZCwoUzZNG1vHY7P2XV2x9FfAhy8iGD+lF8UdjFX3t5ebMm6BnnMh8fHwkTRdOt3LDQq8o8ElTBrZaKPxZN2thMZnODs5Hlemb2UX0oRIGRcvWqsd4oJmxsXa/Si98Wa6RHWbc9QZhw80KAcOVhmndZAZAGR+Wq6yslNo5TMOr1/ZyQAook5C4FtcSGn3Y+WczaoGWIxG4ZaWk128g79VIeJcIQqOjPodHvQAhll7qDlItVvBfMOben3GyhYTm7k4YwlEdkONm4yV/UIW0la1rmyztSBQIm9sZmSq44XXgjVmDHNF8UfCZ1ToE4r2SdwTmZv00T2i5faeYnHzxiLPA3Enub7iUo5IdwFArnqad7MO1SY1kLemhX9eFjLWN4mJe56Fu4NiWJkR9APSZQrYeKaqru4KUC68QpVasNJHbuxPSf/PcjF3cjO1+X+4x6L1H5HTPuqUkyZGgDO4ynUHbko4dhlanALcriF7tIfQR9i2r2xOyv5gxJEW/zztGqWma/d4rBoPjnf6tO7rLFHXMt/DVTkAfn5woYtLDwkn5FMyvThRmex3BDf0gujoI1y6cOWLe9Y5geNX0oj+MXg/W0cXAtzSFocstV1PoVqy883hNoeQZ3mIGB3Q0rIUm5d9MA2bMMt31m1g3Sin6EQ== exampleUser@exampleServer",
-"password":"examplePassword",
+"username":"myNewUser",
+"ssh_key":"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCZ3S7gGp3rcbKmG2Y4vGZFMuMZCwoUzZNG1vHY7P2XV2x9FfAhy8iGD+lF8UdjFX3t5ebMm6BnnMh8fHwkTRdOt3LDQq8o8ElTBrZaKPxZN2thMZnODs5Hlemb2UX0oRIGRcvWqsd4oJmxsXa/Si98Wa6RHWbc9QZhw80KAcOVhmndZAZAGR+Wq6yslNo5TMOr1/ZyQAook5C4FtcSGn3Y+WczaoGWIxG4ZaWk128g79VIeJcIQqOjPodHvQAhll7qDlItVvBfMOben3GyhYTm7k4YwlEdkONm4yV/UIW0la1rmyztSBQIm9sZmSq44XXgjVmDHNF8UfCZ1ToE4r2SdwTmZv00T2i5faeYnHzxiLPA3Enub7iUo5IdwFArnqad7MO1SY1kLemhX9eFjLWN4mJe56Fu4NiWJkR9APSZQrYeKaqru4KUC68QpVasNJHbuxPSf/PcjF3cjO1+X+4x6L1H5HTPuqUkyZGgDO4ynUHbko4dhlanALcriF7tIfQR9i2r2xOyv5gxJEW/zztGqWma/d4rBoPjnf6tO7rLFHXMt/DVTkAfn5woYtLDwkn5FMyvThRmex3BDf0gujoI1y6cOWLe9Y5geNX0oj+MXg/W0cXAtzSFocstV1PoVqy883hNoeQZ3mIGB3Q0rIUm5d9MA2bMMt31m1g3Sin6EQ== myNewUser@myVM",
+"password":"myNewUserPassword",
 }
 ```
 
+Execute the VMAccess script with:
+
 ```bash
-bill@slackware$ azure vm extension set exampleResourceGruop exampleVM \
-VMAccessForLinux Microsoft.OSTCExtensions * \
+azure vm extension set \
+myResourceGroup \
+myVM \
+VMAccessForLinux \
+Microsoft.OSTCExtensions * \
 --private-config-path create_new_user.json
 ```
 
-#### To create a new user use this VMAccess script -
+To delete a user, use this VMAccess script:
 
 `remove_user.json`
 
 ```json
 {
-"remove_user":"exampleUser",
+"remove_user":"myDeletedUser",
 }
 ```
 
+Execute the VMAccess script with:
+
 ```bash
-bill@slackware$ azure vm extension set exampleResourceGruop exampleVM \
-VMAccessForLinux Microsoft.OSTCExtensions * \
+azure vm extension set \
+myResourceGroup \
+myVM \
+VMAccessForLinux \
+Microsoft.OSTCExtensions * \
 --private-config-path remove_user.json
 ```
 
-### Using VMAccess to reset the SSHD configuration on Linux
+### Using VMAccess to reset the SSHD configuration
 
-If you make changes to the Linux VMs SSHD configuration and close the SSH connection before verifying the changes, you may be prevented from SSH'ing back in.  VMAccess can be used to reset the SSHD configuration.
+If you make changes to the Linux VMs SSHD configuration and close the SSH connection before verifying the changes, you may be prevented from SSH'ing back in.  VMAccess can be used to reset the SSHD configuration back to a known good configuration without being logged in over SSH.
 
-#### To reset the SSHD configuration use this VMAccess script -
+To reset the SSHD configuration use this VMAccess script:
 
 `reset_sshd.json`
 
@@ -220,8 +258,23 @@ If you make changes to the Linux VMs SSHD configuration and close the SSH connec
 }
 ```
 
+Execute the VMAccess script with:
+
 ```bash
-bill@slackware$ azure vm extension set exampleResourceGruop exampleVM \
-VMAccessForLinux Microsoft.OSTCExtensions * \
+azure vm extension set \
+myResourceGroup \
+myVM \
+VMAccessForLinux \
+Microsoft.OSTCExtensions * \
 --private-config-path reset_sshd.json
 ```
+
+## Next steps
+
+Updating Linux using Azure VMAccess Extensions is one method to make changes on a running Linux VM.  You can also use tools like cloud-init and Azure Templates to modify your Linux VM on boot.
+
+[About virtual machine extensions and features](virtual-machines-linux-extensions-features.md)
+
+[Authoring Azure Resource Manager templates with Linux VM extensions](virtual-machines-linux-extensions-authoring-templates.md)
+
+[Using cloud-init to customize a Linux VM during creation](virtual-machines-linux-using-cloud-init.md)

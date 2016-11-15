@@ -3,8 +3,8 @@
    description="Learn how to manage Data Lake Analytics accounts, data sources, jobs and users using Azure SDK for Node.js"
    services="data-lake-analytics"
    documentationCenter=""
-   authors="mumian"
-   manager="paulettm"
+   authors="edmacauley"
+   manager="jhubbard"
    editor="cgronlun"/>
 
 <tags
@@ -13,8 +13,8 @@
    ms.topic="get-started-article"
    ms.tgt_pltfrm="na"
    ms.workload="big-data"
-   ms.date="04/21/2016"
-   ms.author="jgao"/>
+   ms.date="05/16/2016"
+   ms.author="edmaca"/>
 
 # Manage Azure Data Lake Analytics using Azure SDK for Node.js
 

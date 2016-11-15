@@ -13,27 +13,37 @@
 	ms.tgt_pltfrm="na" 
 	ms.devlang="na" 
 	ms.topic="article" 
-	ms.date="02/29/2016" 
-	ms.author="mandia"/>
+	ms.date="10/18/2016" 
+	ms.author="ccompy"/>
 
 
 # Create and Manage Hybrid Connections
 
 
 ## Overview of the Steps
-1. Create a Hybrid Connection by entering the host name or IP address of the on-premises resource in your private network.
-2. Link your Azure Web Apps or Azure Mobile Apps to the Hybrid Connection.
+1. Create a Hybrid Connection by entering the **host name** or **FQDN** of the on-premises resource in your private network.
+2. Link your Azure web apps or Azure mobile apps to the Hybrid Connection.
 3. Install the Hybrid Connection Manager on your on-premises resource and connect to the specific Hybrid Connection. The Azure portal provides a single-click experience to install and connect.
 4. Manage Hybrid Connections and their connection keys.
 
 This topic lists these steps. 
+
+> [AZURE.IMPORTANT] It is possible to set a Hybrid Connection endpoint to an IP address. If you use an IP address, you may or may not reach the on-premises resource, depending on your client. The Hybrid Connection depends on the client doing a DNS lookup. In most cases, the __client__ is your application code. If the client does not perform a DNS lookup, (it does not try to resolve the IP address as if it were a domain name (x.x.x.x)), then traffic is not sent through the Hybrid Connection.
+>
+> For example (pseudocode), you define **10.4.5.6** as your on-premises host:
+> 
+> **The following scenario works:**  
+> `Application code -> GetHostByName("10.4.5.6") -> Resolves to 127.0.0.3 -> Connect("127.0.0.3") -> Hybrid Connection -> on-prem host`
+> 
+> **The following scenario doesn't work:**  
+> `Application code -> Connect("10.4.5.6") -> ?? -> No route to host`
 
 
 ## <a name="CreateHybridConnection"></a>Create a Hybrid Connection
 
 A Hybrid Connection can be created in the Azure portal using Web Apps **or** using BizTalk Services. 
 
-**To create Hybrid Connections using Web Apps**, see [Connect Azure Web Apps to an On-Premises Resource](../app-service-web/web-sites-hybrid-connection-get-started.md).
+**To create Hybrid Connections using Web Apps**, see [Connect Azure Web Apps to an On-Premises Resource](../app-service-web/web-sites-hybrid-connection-get-started.md). You can also install the Hybrid Connection Manager (HCM) from your web app, which is the preferred method. 
 
 **To create Hybrid Connections in BizTalk Services**:
 
@@ -49,7 +59,7 @@ A Hybrid Connection can be created in the Azure portal using Web Apps **or** usi
 	Property | Description
 --- | ---
 Name | The Hybrid Connection name must be unique and cannot be the same name as the BizTalk Service. You can enter any name but be specific with its purpose. Examples include:<br/><br/>Payroll*SQLServer*<br/>SupplyList*SharepointServer*<br/>Customers*OracleServer*
-Host Name | Enter the fully qualified host name, only the host name, or the IPv4 address of the on-premises resource. Examples include:<br/><br/>mySQLServer<br/>*mySQLServer*.*Domain*.corp.*yourCompany*.com<br/>*myHTTPSharePointServer*<br/>*myHTTPSharePointServer*.*yourCompany*.com<br/>10.100.10.10
+Host Name | Enter the fully qualified host name, only the host name, or the IPv4 address of the on-premises resource. Examples include:<br/><br/>mySQLServer<br/>*mySQLServer*.*Domain*.corp.*yourCompany*.com<br/>*myHTTPSharePointServer*<br/>*myHTTPSharePointServer*.*yourCompany*.com<br/>10.100.10.10<br/><br/>If you use the IPv4 address, note that your client or application code may not resolve the IP address. See the Important note at the top of this topic.
 Port | Enter the port number of the on-premises resource. For example, if you're using Web Apps, enter port 80 or port 443. If you're using SQL Server, enter port 1433.
 
 5. Select the check mark to complete the setup. 
@@ -60,16 +70,13 @@ Port | Enter the port number of the on-premises resource. For example, if you're
 - Each Hybrid Connection is created with a pair of connection strings: Application keys that SEND and On-premises keys that LISTEN. Each pair has a Primary and a Secondary key. 
 
 
-## <a name="LinkWebSite"></a>Link your Azure Web Apps or Azure Mobile Apps
+## <a name="LinkWebSite"></a>Link your Azure App Service Web App or Mobile App
 
-To link the Azure Web Apps to an existing Hybrid Connection, select **use an existing Hybrid Connection** in the Hybrid Connections blade. See [Connect Azure Web Apps to an On-Premises Resource](../app-service-web/web-sites-hybrid-connection-get-started.md).
-
-To link the Azure Mobile Apps to an existing Hybrid Connection, select **add hybrid connection** when changing or creating a Mobile Service. See [Azure Mobile Services and Hybrid Connections](../mobile-services/mobile-services-dotnet-backend-hybrid-connections-get-started.md).
-
+To link a Web App or Mobile App in Azure App Service to an existing Hybrid Connection, select **use an existing Hybrid Connection** in the Hybrid Connections blade. See [Access on-premises resources using hybrid connections in Azure App Service](../app-service-web/web-sites-hybrid-connection-get-started.md).
 
 ## <a name="InstallHCM"></a>Install the Hybrid Connection Manager on-premises
 
-After a Hybrid Connection is created, install the Hybrid Connection Manager on the on-premises resource. It can be downloaded from your Azure Web Apps or from your BizTalk Service. BizTalk Services steps: 
+After a Hybrid Connection is created, install the Hybrid Connection Manager on the on-premises resource. It can be downloaded from your Azure web apps or from your BizTalk Service. BizTalk Services steps: 
 
 1. Sign in to the [Azure classic portal](http://go.microsoft.com/fwlink/p/?LinkID=213885).
 2. In the left navigation pane, select **BizTalk Services** and then select your BizTalk Service. 
@@ -91,10 +98,10 @@ You can also download the Hybrid Connection Manager MSI file and copy the file t
 --> 
 
 #### Additional
-- Hybrid Connections support on-premises resources installed on the following operating systems:
+- Hybrid Connection Manager can be installed on the following operating systems:
 
-	- Windows Server 2008 R2
-	- Windows Server 2012
+	- Windows Server 2008 R2 (.NET Framework 4.5+ and Windows Management Framework 4.0+ required)
+	- Windows Server 2012 (Windows Management Framework 4.0+ required)
 	- Windows Server 2012 R2
 
 
@@ -146,8 +153,7 @@ Once copied, you can use Group Policy Editor to change the policy.
 ## Next
 
 [Connect Azure Web Apps to an On-Premises Resource](../app-service-web/web-sites-hybrid-connection-get-started.md)  
-[Connect to on-premises SQL Server from Azure Web Apps](../app-service-web/web-sites-hybrid-connection-connect-on-premises-sql-server.md)  
-[Azure Mobile Services and Hybrid Connections](../mobile-services/mobile-services-dotnet-backend-hybrid-connections-get-started.md)  
+[Connect to on-premises SQL Server from Azure Web Apps](../app-service-web/web-sites-hybrid-connection-connect-on-premises-sql-server.md)   
 [Hybrid Connections Overview](integration-hybrid-connection-overview.md)
 
 

@@ -1,6 +1,6 @@
 <properties
-	pageTitle="Create a Secure Linux VM using a Azure template | Microsoft Azure"
-	description="Create a Secure Linux VM on Azure using an Azure Resource Manager template."
+	pageTitle="Create a Linux VM using an Azure template | Microsoft Azure"
+	description="Create a Linux VM on Azure using an Azure Resource Manager template."
 	services="virtual-machines-linux"
 	documentationCenter=""
 	authors="vlivech"
@@ -14,54 +14,70 @@
 	ms.tgt_pltfrm="vm-linux"
 	ms.devlang="na"
 	ms.topic="hero-article"
-	ms.date="04/04/2016"
+	ms.date="10/24/2016"
 	ms.author="v-livech"/>
 
-# Create a secured Linux VM using an Azure template
+# Create a Linux VM using an Azure template
 
-To create a Linux VM from a template you will need [the Azure CLI](../xplat-cli-install.md) in resource manager mode (`azure config mode arm`).
+This article shows you how to quickly deploy a Linux Virtual Machine on Azure using an Azure Template.  The article requires:
+
+- an Azure account ([get a free trial](https://azure.microsoft.com/pricing/free-trial/)).
+
+- the [Azure CLI](../xplat-cli-install.md) logged in with `azure login`.
+
+- the Azure CLI _must be in_ Azure Resource Manager mode `azure config mode arm`.
+
+You can also quickly deploy a Linux VM template by using the [Azure portal](virtual-machines-linux-quick-create-portal.md).
 
 ## Quick Command Summary
 
 ```bash
-chrisl@fedora$ azure group create -n <exampleRGname> -l <exampleAzureRegion> [--template-uri <URL> | --template-file <path> | <template-file> -e <parameters.json file>]
+azure group create \
+-n myResourceGroup \
+-l westus \
+--template-uri https://raw.githubusercontent.com/azure/azure-quickstart-templates/master/101-vm-sshkey/azuredeploy.json
 ```
 
 ## Detailed Walkthrough
 
-Templates allow you to create VMs on Azure with settings that you want to customize during the launch, things like usernames and hostnames. For this article we will focus on launching an Ubuntu VM using an Azure template that creates a network security group (NSG) with only one port open (22 for SSH) and which requires SSH keys for login.
+Templates allow you to create VMs on Azure with settings that you want to customize during the launch, settings like usernames and hostnames. For this article, we are launching an Azure template utilizing an Ubuntu VM along with a network security group (NSG) with port 22 open for SSH.
 
-Azure Resource Manager templates are JSON files that can be used for simple one-off tasks -- like launching an Ubuntu VM as done in this article -- or to construct complex Azure configurations of entire environments like a testing, dev or production deployment from the networking to the OS to application stack deployment.
+Azure Resource Manager templates are JSON files that can be used for simple one-off tasks like launching an Ubuntu VM as done in this article.  Azure Templates can also be used to construct complex Azure configurations of entire environments like a testing, dev, or production deployment stack.
 
 ## Create the Linux VM
 
-The following code example shows how to call `azure group create` to create a resource group and deploy an SSH-secured Linux VM at the same time using [this Azure Resource Manager template](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/101-vm-sshkey/azuredeploy.json). Remember that in your example you need to use names that are unique to your environment. This example uses `quicksecuretemplate` as the resource group name, `securelinux` as the VM name, and `quicksecurelinux` as a subdomain name.
+The following code example shows how to call `azure group create` to create a resource group and deploy an SSH-secured Linux VM at the same time using [this Azure Resource Manager template](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/101-vm-sshkey/azuredeploy.json). Remember that in your example you need to use names that are unique to your environment. This example uses `myResourceGroup` as the resource group name, and `myVM` as the VM name.
 
 ```bash
-chrisl@fedora$ azure group create -n quicksecuretemplate -l eastus --template-uri https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/101-vm-sshkey/azuredeploy.json
+azure group create \
+--name myResourceGroup \
+--location westus \
+--template-uri https://raw.githubusercontent.com/azure/azure-quickstart-templates/master/101-vm-sshkey/azuredeploy.json
+```
+
+The output should look like the following output block:
+
+```bash
 info:    Executing command group create
-+ Getting resource group quicksecuretemplate
-+ Creating resource group quicksecuretemplate
-info:    Created resource group quicksecuretemplate
++ Getting resource group myResourceGroup
++ Creating resource group myResourceGroup
+info:    Created resource group myResourceGroup
 info:    Supply values for the following parameters
-adminUserName: ops
-sshKeyData: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDDRZ/XB8p8uXMqgI8EoN3dWQw... user@contoso.com
-dnsLabelPrefix: quicksecurelinux
-vmName: securelinux
+sshKeyData: ssh-rsa AAAAB3Nza<..ssh public key text..>VQgwjNjQ== myAdminUser@myVM
 + Initializing template configurations and parameters
 + Creating a deployment
 info:    Created template deployment "azuredeploy"
-data:    Id:                  /subscriptions/<guid>/resourceGroups/quicksecuretemplate
-data:    Name:                quicksecuretemplate
-data:    Location:            eastus
+data:    Id:                  /subscriptions/<..subid text..>/resourceGroups/myResourceGroup
+data:    Name:                myResourceGroup
+data:    Location:            westus
 data:    Provisioning State:  Succeeded
 data:    Tags: null
 data:
 info:    group create command OK
 ```
 
-You can create a new resource group and deploy a VM using the `--template-uri` parameter, or you can download or create a template locally and pass the template using the `--template-file` parameter with a path to the template file as an argument. The Azure CLI prompts you for the parameters required by the template.
+That example deployed a VM using the `--template-uri` parameter.  You can also download or create a template locally and pass the template using the `--template-file` parameter with a path to the template file as an argument. The Azure CLI prompts you for the parameters required by the template.
 
 ## Next steps
 
-Once you create Linux VMs with templates, you'll want to see what other app frameworks are available to use with templates. Search the [templates gallery](https://azure.microsoft.com/documentation/templates/) to discover what app frameworks to deploy next.
+Search the [templates gallery](https://azure.microsoft.com/documentation/templates/) to discover what app frameworks to deploy next.

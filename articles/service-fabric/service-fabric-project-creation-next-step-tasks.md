@@ -13,7 +13,7 @@
    ms.topic="article"
    ms.tgt_pltfrm="NA"
    ms.workload="NA"
-   ms.date="03/27/2016"
+   ms.date="11/01/2016"
    ms.author="seanmck"/>
 
 # Your Service Fabric application and next steps
@@ -27,9 +27,9 @@ The application project consists of:
 
 - A set of references to the services that make up your application.
 
-- Two publish profiles (Local and Cloud) that you can use to maintain preferences for working with different environments--such as preferences related to a cluster endpoint and whether to perform upgrade deployments by default.
+- Three publish profiles (1-Node Local, 5-Node Local, and Cloud) that you can use to maintain preferences for working with different environments--such as preferences related to a cluster endpoint and whether to perform upgrade deployments by default.
 
-- Two application parameter files (Local and Cloud) that you can use to maintain environment-specific application configurations, such as the number of partitions to create for a service.
+- Three application parameter files (same as above) that you can use to maintain environment-specific application configurations, such as the number of partitions to create for a service.
 
 - A deployment script that you can use to deploy your application from the command line or as part of an automated continuous integration and deployment pipeline.
 
@@ -47,7 +47,11 @@ When you add a new reliable actor, Visual Studio adds two projects to your solut
 The actor project provides methods for setting and getting the value of a counter that is reliably persisted within the actor's state. The interface project provides an interface that other services can use to invoke the actor.
 
 ### Stateless Web API
-The stateless Web API project provides a basic web service that you can use to open your application to external clients. For more information about how the project structured, see [Service Fabric Web API services with OWIN self-hosting](service-fabric-reliable-services-communication-webapi).
+The stateless Web API project provides a basic web service that you can use to open your application to external clients. For more information about how the project structured, see [Service Fabric Web API services with OWIN self-hosting](service-fabric-reliable-services-communication-webapi.md).
+
+### ASP.NET core
+
+The Service Fabric SDK provides the same set of ASP.NET Core templates that are available for standalone ASP.NET Core projects: empty, [Web API][aspnet-webapi], and [Web Application][aspnet-webapp].
 
 ## Next steps
 ### Create an Azure cluster
@@ -70,7 +74,6 @@ Service Fabric enables independent versioning and upgrading of independent servi
 To learn how you can set up a continuous integration process for your Service Fabric application, see [Configure continuous integration with Visual Studio Team Services][ci-with-vso].
 
 
-
 <!-- Links -->
 [add-web-frontend]: service-fabric-add-a-web-frontend.md
 [create-cluster-in-portal]: service-fabric-cluster-creation-via-portal.md
@@ -79,3 +82,5 @@ To learn how you can set up a continuous integration process for your Service Fa
 [ci-with-vso]: service-fabric-set-up-continuous-integration.md
 [reliable-services-webapi]: service-fabric-reliable-services-communication-webapi.md
 [app-upgrade-tutorial]: service-fabric-application-upgrade-tutorial.md
+[aspnet-webapi]: https://docs.asp.net/en/latest/tutorials/first-web-api.html
+[aspnet-webapp]: https://docs.asp.net/en/latest/tutorials/first-mvc-app/index.html

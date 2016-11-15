@@ -1,10 +1,10 @@
 <properties
-	pageTitle="Feature engineering in the Cortana Analytics Process | Microsoft Azure" 
+	pageTitle="Feature engineering in data science | Microsoft Azure" 
 	description="Explains the purposes of feature engineering and provides examples of its role in the data enhancement process of machine learning."
 	services="machine-learning"
 	documentationCenter=""
 	authors="bradsev"
-	manager="paulettm"
+	manager="jhubbard"
 	editor="cgronlun"/>
 
 <tags
@@ -13,23 +13,22 @@
 	ms.tgt_pltfrm="na"
 	ms.devlang="na"
 	ms.topic="article"
-	ms.date="02/05/2016"
+	ms.date="11/01/2016"
 	ms.author="zhangya;bradsev" />
 
 
-# Feature engineering in the Cortana Analytics Process 
+# Feature engineering in data science 
 
-Feature engineering attempts to increase the predictive power of learning algorithms by creating features from raw data that help facilitate the learning process.
+This topic explains the purposes of feature engineering and provides examples of its role in the data enhancement process of machine learning. The examples used to illustrate this process are drawn from Azure Machine Learning Studio. 
 
 [AZURE.INCLUDE [cap-create-features-data-selector](../../includes/cap-create-features-selector.md)]
-This **menu** links to topics that describe how to create features for data in various environments. This task is a step in the [Cortana Analytics Process (CAP)](https://azure.microsoft.com/documentation/learning-paths/cortana-analytics-process/).
 
-##Introduction
+This **menu** links to topics that describe how to create features for data in various environments. This task is a step in the [Team Data Science Process (TDSP)](https://azure.microsoft.com/documentation/learning-paths/cortana-analytics-process/).
 
-This topic explains the purposes of feature engineering and provides examples of its role in the data enhancement process of machine learning. These examples are drawn from Azure Machine Learning Studio. 
+Feature engineering attempts to increase the predictive power of learning algorithms by creating features from raw data that help facilitate the learning process. The engineering and selection of features is one part of the TDSP outlined in the [What is the Team Data Science Process lifecycle?](data-science-process-overview.md) Feature engineering and selection are parts of the **Develop features** step of the TDSP. 
 
-The engineering and selection of features is one part of the CAP process outlined in the [What is the Cortana Analytics Process?](machine-learning-data-science-the-cortana-analytics-process.md) Feature engineering and selection are parts of the **Develop features** step of the CAP. 
 * **feature engineering**: This process attempts to create additional relevant features from the existing raw features in the data, and to increase the predictive power of the learning algorithm.
+
 * **feature selection**: This process selects the key subset of original data features in an attempt to reduce the dimensionality of the training problem.
 
 Normally **feature engineering** is applied first to generate additional features, and then the **feature selection** step is performed to eliminate irrelevant, redundant, or highly correlated features.
@@ -51,7 +50,7 @@ When starting with Azure Machine Learning, it is easiest to grasp this process c
 * A regression example [Prediction of the number of bike rentals](http://gallery.cortanaintelligence.com/Experiment/Regression-Demand-estimation-4) in a supervised experiment where the target values are known
 * A text mining classification example using [Feature Hashing](https://msdn.microsoft.com/library/azure/c9a82660-2d9c-411d-8122-4d9e0b3ce92a/)
 
-### Example 1: Adding Temporal Features for Regression Model ###
+## Example 1: Adding Temporal Features for Regression Model
 
 Let's use the experiment "Demand forecasting of bikes" in Azure Machine Learning Studio to demonstrate how to engineer features for a regression task. The objective of this experiment is to predict the demand for the bikes, that is, the number of bike rentals within a specific month/day/hour. The dataset "Bike Rental UCI dataset" is used as the raw input data. This dataset is based on real data from the Capital Bikeshare company that maintains a bike rental network in Washington DC in the United States. The dataset represents the number of bike rentals within a specific hour of a day in the years 2011 and year 2012 and contains 17379 rows and 17 columns. The raw feature set contains weather conditions (temperature/humidity/wind speed) and the type of the day (holiday/weekday). The field to predict is "cnt", a count which represents the bike rentals within a specific hour and which ranges ranges from 1 to 977.
 
@@ -72,7 +71,7 @@ The comparison of the performance results of the four models are summarized in t
 
 ![result comparison](./media/machine-learning-data-science-create-features/result1.png)
 
-### <a name="example2"></a> Example 2: Creating Features in Text Mining  
+## <a name="example2"></a> Example 2: Creating Features in Text Mining  
 
 Feature engineering is widely applied in tasks related to text mining, such as document classification and sentiment analysis. For example, when we want to classify documents into several categories, a typical assumption is that the word/phrases included in one doc category are less likely to occur in another doc category. In another words, the frequency of the words/phrases distribution is able to characterize different document categories. In text mining applications, because individual pieces of text-contents usually serve as the input data, the feature engineering process is needed to create the features involving word/phrase frequencies.
 

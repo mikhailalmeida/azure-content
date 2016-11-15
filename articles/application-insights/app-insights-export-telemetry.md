@@ -1,5 +1,5 @@
 <properties 
-	pageTitle="Continuous export of telemetry from Application Insights" 
+	pageTitle="Continuous export of telemetry from Application Insights | Microsoft Azure" 
 	description="Export diagnostic and usage data to storage in Microsoft Azure, and download it from there." 
 	services="application-insights" 
     documentationCenter=""
@@ -12,18 +12,21 @@
 	ms.tgt_pltfrm="ibiza" 
 	ms.devlang="na" 
 	ms.topic="article" 
-	ms.date="03/10/2016" 
+	ms.date="10/18/2016" 
 	ms.author="awills"/>
  
 # Export telemetry from Application Insights
 
-Want to do some customised analysis on your telemetry? Or maybe you'd like an email alert on events with specific properties? Continuous Export is ideal for this. The events you see in the Application Insights portal can be exported to storage in Microsoft Azure in JSON format. From there you can download your data and write whatever code you need to process it.  
+Want to keep your telemetry for longer than the standard retention period? Or process it in some specialized way? Continuous Export is ideal for this. The events you see in the Application Insights portal can be exported to storage in Microsoft Azure in JSON format. From there you can download your data and write whatever code you need to process it.  
 
 Continuous Export is available in the free trial period and on the [Standard and Premium pricing plans](https://azure.microsoft.com/pricing/details/application-insights/).
 
->[AZURE.NOTE] If you're looking to [explore your data in Power BI](http://blogs.msdn.com/b/powerbi/archive/2015/11/04/explore-your-application-insights-data-with-power-bi.aspx), you can do that without using Continuous Export.
->
->And if you just want to do a [one-off export](app-insights-metrics-explorer.md#export-to-excel) of what you see on a metrics or search blade, click Export at the top of the blade. 
+
+Before you set up continuous export, there are some alternatives you might want to consider:
+
+* [The Export button](app-insights-metrics-explorer.md#export-to-excel) at the top of a metrics or search blade lets you transfer tables and charts to an Excel spreadsheet. 
+* [Analytics](app-insights-analytics.md) provides a powerful query  language for telemetry, and also can export results.
+* If you're looking to [explore your data in Power BI](http://blogs.msdn.com/b/powerbi/archive/2015/11/04/explore-your-application-insights-data-with-power-bi.aspx), you can do that without using Continuous Export.
 
 
 ## Create a storage account
@@ -45,11 +48,11 @@ On your application's Overview blade in the Application Insights portal, open Co
 
 ![Scroll down and click Continuous Export](./media/app-insights-export-telemetry/01-export.png)
 
-Add an export, and choose an [Azure storage account](../storage/storage-introduction.md) where you want to put the data:
+Add a continuous export, and choose the event types you'd like to export:
 
 ![Click Add, Export Destination, Storage account, and then either create a new store or choose an existing store](./media/app-insights-export-telemetry/02-add.png)
 
-Choose the event types you'd like to export:
+Choose or create the [Azure storage account](../storage/storage-introduction.md) where you want to store the data:
 
 ![Click Choose event types](./media/app-insights-export-telemetry/03-types.png)
 
@@ -73,6 +76,8 @@ To stop the stream permanently, delete the export. Doing so doesn't delete your 
 ## <a name="analyze"></a> What events do you get?
 
 The exported data is the raw telemetry we receive from your application, except that we add location data which we calculate from the client IP address. 
+
+Data that has been discarded by [sampling](app-insights-sampling.md) is not included in the exported data.
 
 Other calculated metrics are not included. For example, we don't export average CPU utilisation, but we do export the raw telemetry from which the average is computed.
 
@@ -106,12 +111,13 @@ Where
 
 ## <a name="format"></a> Data format
 
-* Each blob is a text file that contains multiple '\n'-separated rows.
+* Each blob is a text file that contains multiple '\n'-separated rows. It contains the telemetry processed over a time period of roughly half a minute.
+* Each row represents a telemetry data point such as a request or page view.
 * Each row is an unformatted JSON document. If you want to sit and stare at it, open it in Visual Studio and choose Edit, Advanced, Format File:
 
 ![View the telemetry with a suitable tool](./media/app-insights-export-telemetry/06-json.png)
 
-Time durations are in ticks, where 10 000 ticks = 1ms. For example, these values show a time of 10ms to send a request from the browser, 30ms to receive it, and 1.8s to process the page in the browser:
+Time durations are in ticks, where 10 000 ticks = 1ms. For example, these values show a time of 1ms to send a request from the browser, 3ms to receive it, and 1.8s to process the page in the browser:
 
 	"sendRequest": {"value": 10000.0},
 	"receiveRequest": {"value": 30000.0},
@@ -162,9 +168,7 @@ The continuous export will restart.
 
 * [Export to SQL using a worker role][exportcode]
 * [Export to SQL using Stream Analytics][exportasa]
-* [Export to Power BI using Stream Analytics](app-insights-export-power-bi.md)
- * Note that this isn't the standard way to use Power BI. There's [an adaptor](http://blogs.msdn.com/b/powerbi/archive/2015/11/04/explore-your-application-insights-data-with-power-bi.aspx) which doesn't require Continuous Export.
-
+* [Stream Analytics sample 2](app-insights-export-stream-analytics.md)
 
 On larger scales, consider [HDInsight](https://azure.microsoft.com/services/hdinsight/) - Hadoop clusters in the cloud. HDInsight provides a variety of technologies for managing and analyzing big data.
 
@@ -209,8 +213,8 @@ On larger scales, consider [HDInsight](https://azure.microsoft.com/services/hdin
 
 ## Code samples
 
-* [Stream Application Insights to Power BI](app-insights-export-power-bi.md)
 * [Parse exported JSON using a worker role][exportcode]
+* [Stream Analytics sample](app-insights-export-stream-analytics.md)
 * [Export to SQL using Stream Analytics][exportasa]
 
 * [Detailed data model reference for the property types and values.](app-insights-export-data-model.md)

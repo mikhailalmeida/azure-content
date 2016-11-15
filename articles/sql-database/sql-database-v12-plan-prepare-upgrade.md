@@ -14,7 +14,7 @@
 	ms.tgt_pltfrm="na"
 	ms.devlang="na"
 	ms.topic="article"
-	ms.date="02/05/2016"
+	ms.date="10/24/2016"
 	ms.author="genemi"/>
 
 
@@ -64,10 +64,10 @@ For detailed information about the Basic, Standard, and Premium service tiers, s
 
 
 
-### Review the geo-replication configuration
+### Review the Geo-Replication configuration
 
 
-If your Azure SQL database is configured for geo-replication, you should document its current configuration, and stop geo-replication, before you start the upgrade preparation actions. After upgrade completes you must reconfigure your database for geo-replication.
+If your Azure SQL database is configured for Geo-Replication, you should document its current configuration, and stop Geo-Replication, before you start the upgrade preparation actions. After upgrade completes you must reconfigure your database for Geo-Replication.
 
 
 The strategy is to leave the source intact and test on a copy of the database.
@@ -97,16 +97,16 @@ You can reduce the steps necessary during upgrade by switching your V11 database
 If you are unsure which service tier to switch to, the S2 level of the Standard tier might be a sensible initial choice. Any lesser tier will have fewer resources than the Web and Business tier had.
 
 
-### Suspend geo-replication during upgrade
+### Suspend Geo-Replication during upgrade
 
 
-The upgrade to V12 cannot run if geo-replication is active on your database. You must first reconfigure your database to stop using geo-replication.
+The upgrade to V12 cannot run if Geo-Replication is active on your database. You must first reconfigure your database to stop using Geo-Replication.
 
 
-After the upgrade completes you can configure your database to again use geo-replication.
+After the upgrade completes you can configure your database to again use Geo-Replication.
 
 
-### Client on an Azure VM
+### Open ports on an Azure VM for client connectivity
 
 
 If your client program connects to SQL Database V12 while your client runs on an Azure virtual machine (VM), you must open the following port ranges on the VM:
@@ -137,12 +137,11 @@ There are three portals for Azure, and each has different abilities regarding SQ
  - Can *not* upgrade your V11 database to V12.
 
 
-- (http://*yourservername*.database.windows.net)<br/>
-Azure SQL Database Classic Portal:
+- (http://*yourservername*.database.windows.net)<br/>Azure SQL Database Classic Portal:
  - Can*not* manage V12 servers.
 
 
-We encourage you to connect to your Azure SQL databases with Visual Studio 2013 (VS2013). VS2013 can be used for tasks such as the following:
+We encourage you to connect to your Azure SQL databases with Visual Studio 2015 (VS2015). VS2015 can be used for tasks such as the following:
 
 
 - To run a Transact-SQL statement.
@@ -150,13 +149,16 @@ We encourage you to connect to your Azure SQL databases with Visual Studio 2013 
 - To develop a database, either online or offline.
 
 
-You can instead connect with [Visual Studio Community 2013](https://www.visualstudio.com/en-us/news/vs2013-community-vs.aspx/), which is a free and full-featured version of VS2013.
+Or instead, for free you can download [Visual Studio Community 2015](https://www.visualstudio.com/vs/community/), which is a full-featured version of VS2015.
 
 
-In the older Azure Classic Portal, on the database page, you can click **Open in Visual Studio** to launch VS2013 on your computer for connection to your Azure SQL Database.
+In the older Azure Classic Portal, on the database page, you can click **Open in Visual Studio** to launch VS2015 on your computer for connection to your Azure SQL Database.
 
 
 For another alternative, you can use SQL Server Management Studio (SSMS) 2014 with [CU6](http://support.microsoft.com/kb/3031047/) to connect to Azure SQL Database. More details are on this blog post:<br/>[Client tooling updates for Azure SQL Database](https://azure.microsoft.com/blog/2014/12/22/client-tooling-updates-for-azure-sql-database/).
+
+
+> [AZURE.IMPORTANT] It is recommended that you always use the latest version of Management Studio to remain synchronized with updates to Microsoft Azure and SQL Database. [Update SQL Server Management Studio](https://msdn.microsoft.com/library/mt238290.aspx).
 
 
 ### Limitation *during* upgrade to V12
@@ -168,7 +170,7 @@ The V11 database remains available for data access during the upgrade to V12. Ye
 | Limitation | Description |
 | :--- | :--- |
 | Duration of upgrade | The duration of upgrade depends on the size, edition and number of databases in the server. The upgrade process can run for hours to days for servers especially for servers that has databases:<br/><br/>* Larger than 50 GB, or<br/>* At a non-premium service tier<br/><br/>Creation of new databases on the server during the upgrade can also increase the upgrade duration. |
-| No geo-replication | Geo-replication is not supported on a V12 server that is currently involved in an upgrade from V11. |
+| No Geo-Replication | Geo-Replication is not supported on a V12 server that is currently involved in an upgrade from V11. |
 | Database is briefly unavailable in final phase of upgrade to V12 | The databases belonging to your V11 server remain available during the upgrade process. However, the connection to the server and databases is briefly unavailable in the final phase, when the switch over begins from V11 to the ready V12.<br/><br/>The switch over period can range from 40 seconds to 5 minutes. For most servers, switch over is expected to complete within 90 seconds. Switch over time increases for servers that have a large number of databases, or when the databases have heavy write workloads. |
 
 
@@ -189,11 +191,11 @@ You can export or import a V12 database by using the [Azure Portal](https://port
 
 
 - SQL Server Management Studio (SSMS)
-- Visual Studio 2013
+- Visual Studio 2015
 - Data-Tier Application Framework (DacFx)
 
 
-However, to use the tools, you must first install their latest updates to ensure they support the new V12 features:
+However, to use the tools, you must first have or install their latest updates to ensure they support the new V12 features:
 
 
 - [Cumulative Update 6 for SQL Server Management Studio 2014](http://support2.microsoft.com/kb/3031047)

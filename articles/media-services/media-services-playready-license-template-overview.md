@@ -1,5 +1,5 @@
 <properties 
-	pageTitle="Media Services PlayReady License Template Overview" 
+	pageTitle="Media Services PlayReady license template overview" 
 	description="This topic gives an overview of a PlayReady license template that used to configure PlayReady licenses." 
 	authors="juliako" 
 	manager="erikre" 
@@ -13,10 +13,10 @@
 	ms.tgt_pltfrm="na" 
 	ms.devlang="na" 
 	ms.topic="article" 
- 	ms.date="04/18/2016"  
+ 	ms.date="09/26/2016"  
 	ms.author="juliako"/>
 
-#Media Services PlayReady License Template Overview
+#Media Services PlayReady license template overview
 
 Azure Media Services now provides a service for delivering Microsoft PlayReady licenses. When the end user player (for example, Silverlight) tries to play your PlayReady protected content, a request is sent to the license delivery service to obtain a license. If the license service approves the request, it issues the license which is sent to the client and can be used to decrypt and play the specified content.
 
@@ -49,7 +49,7 @@ The following example shows the simplest (and most common) template that configu
 
 The XML conforms to the PlayReady license template XML schema defined in the PlayReady license template XML schema section.
 
-Media Services also defines a set of .NET classes that could be used to serialized and deserialized to and from the XML. For description of main classes, see [Media Services .NET classes]((media-services-playready-license-template-overview.md#classes). that are used to configure license templates.
+Media Services also defines a set of .NET classes that could be used to serialized and deserialized to and from the XML. For description of main classes, see [Media Services .NET classes](media-services-playready-license-template-overview.md#classes). that are used to configure license templates.
 
 For an end-to-end example that uses .NET classes to configure the PlayReady license template, see [Using PlayReady Dynamic Encryption and License Delivery Service](https://msdn.microsoft.com/library/azure/dn783467.aspx).
 

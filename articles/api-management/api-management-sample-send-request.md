@@ -4,7 +4,7 @@
 	services="api-management"
 	documentationCenter=""
 	authors="darrelmiller"
-	manager=""
+	manager="erikre"
 	editor=""/>
 
 <tags
@@ -13,8 +13,8 @@
 	ms.topic="article"
 	ms.tgt_pltfrm="na"
 	ms.workload="na"
-	ms.date="02/19/2016"
-	ms.author="v-darmi"/>
+	ms.date="10/25/2016"
+	ms.author="darrmi"/>
 
 
 # Using external services from the Azure API Management service

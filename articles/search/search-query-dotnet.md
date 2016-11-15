@@ -2,6 +2,7 @@
     pageTitle="Query your Azure Search Index using the .NET SDK | Microsoft Azure | Hosted cloud search service"
     description="Build a search query in Azure search and use search parameters to filter and sort search results."
     services="search"
+    manager="jhubbard"
     documentationCenter=""
     authors="brjohnstmsft"
 />
@@ -12,7 +13,7 @@
     ms.workload="search"
     ms.topic="get-started-article"
     ms.tgt_pltfrm="na"
-    ms.date="03/09/2016"
+    ms.date="08/29/2016"
     ms.author="brjohnst"/>
 
 # Query your Azure Search index using the .NET SDK

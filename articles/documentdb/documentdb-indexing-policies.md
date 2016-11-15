@@ -14,13 +14,13 @@
     ms.topic="article" 
     ms.tgt_pltfrm="na" 
     ms.workload="data-services" 
-    ms.date="03/30/2016" 
+    ms.date="10/27/2016" 
     ms.author="arramac"/>
 
 
 # DocumentDB indexing policies
 
-While many customers are happy to let DocumentDB automatically handle [all aspects of indexing](documentdb-indexing.md), DocumentDB also supports specifying a custom **indexing policy** for collections during creation. Indexing policies in DocumentDB are more flexible and powerful than secondary indexes offered in other database platforms, because they let you design and customize the shape of the index without sacrificing schema flexibility. To learn how indexing works within DocumentDB, you must understand that by managing indexing policy, you can make fine-grained tradeoffs between index storage overhead, write and query throughput, and query consistency.  
+While many customers are happy to let Azure DocumentDB automatically handle [all aspects of indexing](documentdb-indexing.md), DocumentDB also supports specifying a custom **indexing policy** for collections during creation. Indexing policies in DocumentDB are more flexible and powerful than secondary indexes offered in other database platforms, because they let you design and customize the shape of the index without sacrificing schema flexibility. To learn how indexing works within DocumentDB, you must understand that by managing indexing policy, you can make fine-grained tradeoffs between index storage overhead, write and query throughput, and query consistency.  
 
 In this article, we take a close look at DocumentDB indexing policies, how you can customize indexing policy, and the associated trade-offs. 
 
@@ -44,9 +44,9 @@ The following .NET code snippet shows how to set a custom indexing policy during
 
     DocumentCollection collection = new DocumentCollection { Id = "myCollection" };
     
-    collection.IndexingPolicy.IndexingMode = IndexingMode.Consistent;
     collection.IndexingPolicy = new IndexingPolicy(new RangeIndex(DataType.String) { Precision = -1 });
-
+    collection.IndexingPolicy.IndexingMode = IndexingMode.Consistent;
+    
     await client.CreateDocumentCollectionAsync(UriFactory.CreateDatabaseUri("db"), collection);   
 
 
@@ -159,7 +159,7 @@ The following table shows the consistency for queries based on the indexing mode
     </tbody>
 </table>
 
-DocumentDB returns an error for queries made on collections with None indexing mode. Queries can still be executed as scans via the explicit `x-ms-documentdb-enable-scans` header in the REST API or the `EnableScanInQuery` request option using the .NET SDK. Some query features like ORDER BY are not supported as scans with `EnableScanInQuery`.
+DocumentDB returns an error for queries made on collections with None indexing mode. Queries can still be executed as scans via the explicit `x-ms-documentdb-enable-scan` header in the REST API or the `EnableScanInQuery` request option using the .NET SDK. Some query features like ORDER BY are not supported as scans with `EnableScanInQuery`.
 
 The following table shows the consistency for queries based on the indexing mode (Consistent, Lazy, and None) when EnableScanInQuery is specified.
 
@@ -287,7 +287,7 @@ The following code sample show how create a DocumentDB collection using the .NET
      
      collection.IndexingPolicy.IndexingMode = IndexingMode.Consistent;
      
-     collection = await client.CreateDocumentCollectionAsync(database.SelfLink, collection);
+     collection = await client.CreateDocumentCollectionAsync(UriFactory.CreateDatabaseUri("mydb"), collection);
 
 
 ### Index paths
@@ -461,7 +461,7 @@ The following example configures a specific path with range indexing and a custo
 
 Now that we've taken a look at how to specify paths, let's look at the options we can use to configure the indexing policy for a path. You can specify one or more indexing definitions for every path:
 
-- Data type: **String**, **Number** or **Point** (can contain only one entry per data type per path)
+- Data type: **String**, **Number**, **Point**, **Polygon**, or **LineString** (can contain only one entry per data type per path)
 - Index kind: **Hash** (equality queries), **Range** (equality, range or Order By queries), or **Spatial** (spatial queries) 
 - Precision: 1-8 or -1 (Maximum precision) for numbers, 1-100 (Maximum precision) for string
 
@@ -469,12 +469,14 @@ Now that we've taken a look at how to specify paths, let's look at the options w
 
 DocumentDB supports Hash and Range index kinds for every path (that can configured for strings, numbers or both).
 
-- **Hash** supports efficient equality and JOIN queries. For most use cases, hash indexes do not need a higher precision than the default value of 3 bytes.
-- **Range** supports efficient equality queries, range queries (using >, <, >=, <=, !=), and Order By queries. Order By queries by default also require maximum index precision (-1).
+- **Hash** supports efficient equality and JOIN queries. For most use cases, hash indexes do not need a higher precision than the default value of 3 bytes. DataType can be String or Number.
+- **Range** supports efficient equality queries, range queries (using >, <, >=, <=, !=), and Order By queries. Order By queries by default also require maximum index precision (-1). DataType can be String or Number.
 
-DocumentDB also supports the Spatial index kind for every path, that can be specified for the Point data type. The value at the specified path must be a valid GeoJSON point like `{"type": "Point", "coordinates": [0.0, 10.0]}`.
+DocumentDB also supports the Spatial index kind for every path, that can be specified for the Point, Polygon, or LineString data types. The value at the specified path must be a valid GeoJSON fragment like `{"type": "Point", "coordinates": [0.0, 10.0]}`.
 
-- **Spatial** supports efficient spatial (within and distance) queries.
+- **Spatial** supports efficient spatial (within and distance) queries. DataType can be Point, Polygon, or LineString.
+
+>[AZURE.NOTE] DocumentDB supports automatic indexing of Points, Polygons, and LineStrings.
 
 Here are the supported index kinds and examples of queries that they can be used to serve:
 
@@ -533,14 +535,15 @@ Here are the supported index kinds and examples of queries that they can be used
                     Range over /prop/? (or /*) can be used to serve the following queries efficiently:
                         SELECT * FROM collection c 
                         WHERE ST_DISTANCE(c.prop, {"type": "Point", "coordinates": [0.0, 10.0]}) < 40
-                        SELECT * FROM collection c WHERE ST_WITHIN(c.prop, {"type": "Polygon", ... })
+                        SELECT * FROM collection c WHERE ST_WITHIN(c.prop, {"type": "Polygon", ... }) --with indexing on points enabled
+                        SELECT * FROM collection c WHERE ST_WITHIN({"type": "Point", ... }, c.prop) --with indexing on polygons enabled
                 </p>
             </td>
         </tr>        
     </tbody>
 </table>
 
-By default, an error is returned for queries with range operators such as >= if there is no range index (of any precision) in order to signal that a scan might be necessary to serve the query. Range queries can be performed without a range index using the x-ms-documentdb-enable-scans header in the REST API or the EnableScanInQuery request option using the .NET SDK. If there are any other filters in the query that DocumentDB can use the index to filter against, then no error will be returned.
+By default, an error is returned for queries with range operators such as >= if there is no range index (of any precision) in order to signal that a scan might be necessary to serve the query. Range queries can be performed without a range index using the x-ms-documentdb-enable-scan header in the REST API or the EnableScanInQuery request option using the .NET SDK. If there are any other filters in the query that DocumentDB can use the index to filter against, then no error will be returned.
 
 The same rules apply for spatial queries. By default, an error is returned for spatial queries if there is no spatial index, and there are no other filters that can be served from the index. They can be performed as a scan using x-ms-documentdb-enable-scan/EnableScanInQuery.
 
@@ -551,22 +554,16 @@ For numbers, we recommend using the default precision configuration of -1 ("maxi
 
 Index precision configuration has more practical application with string ranges. Since strings can be any arbitrary length, the choice of the index precision can impact the performance of string range queries, and impact the amount of index storage space required. String range indexes can be configured with 1-100 or -1 ("maximum"). If you would like to perform Order By queries against string properties, then you must specify a precision of -1 for the corresponding paths.
 
-Spatial indexes always use the default index precision for points and cannot be overriden. 
+Spatial indexes always use the default index precision for all types (Points, LineStrings, and Polygons) and cannot be overriden. 
 
-The following example shows how to increase the precision for range indexes in a collection using the .NET SDK. Note that this uses the default path "/*".
+The following example shows how to increase the precision for range indexes in a collection using the .NET SDK. 
 
 **Create a collection with a custom index precision**
 
     var rangeDefault = new DocumentCollection { Id = "rangeCollection" };
     
-    rangeDefault.IndexingPolicy.IncludedPaths.Add(
-        new IncludedPath { 
-            Path = "/*", 
-            Indexes = new Collection<Index> { 
-                new RangeIndex(DataType.String) { Precision = -1 }, 
-                new RangeIndex(DataType.Number) { Precision = -1 }
-            }
-        });
+    // Override the default policy for Strings to range indexing and "max" (-1) precision
+    rangeDefault.IndexingPolicy = new IndexingPolicy(new RangeIndex(DataType.String) { Precision = -1 });
 
     await client.CreateDocumentCollectionAsync(UriFactory.CreateDatabaseUri("db"), rangeDefault);   
 
@@ -576,7 +573,7 @@ The following example shows how to increase the precision for range indexes in a
 Similarly, paths can be completely excluded from indexing. The next example shows how to exclude an entire section of the documents (a.k.a. a sub-tree) from indexing using the "*" wildcard.
 
     var collection = new DocumentCollection { Id = "excludedPathCollection" };
-    collection.IndexingPolicy.IncludedPaths.Add(new IncludedPath { Path = "/" });
+    collection.IndexingPolicy.IncludedPaths.Add(new IncludedPath { Path = "/*" });
     collection.IndexingPolicy.ExcludedPaths.Add(new ExcludedPath { Path = "/nonIndexedContent/*");
     
     collection = await client.CreateDocumentCollectionAsync(UriFactory.CreateDatabaseUri("db"), excluded);
